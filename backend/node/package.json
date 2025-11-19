@@ -1,0 +1,16 @@
+{
+  "name": "bauzagpt-backend",
+  "version": "1.0.0",
+  "description": "Backend API for BAUZA GPT",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "pdfkit": "^0.17.2",
+    "uuid": "^9.0.0"
+  }
+}

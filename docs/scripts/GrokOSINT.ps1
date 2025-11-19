@@ -4,19 +4,27 @@
 $apiKey = $env:XAI_API_KEY
 if (-not $apiKey) { Write-Error "Falta XAI_API_KEY"; exit 1 }
 
+$endpoint = "https://api.x.ai/v1/chat/completions"
 $body = @{
     model = "grok-3"
     messages = @(
         @{ role = "system"; content = "Eres experto OSINT ético en México. Solo datos públicos." }
-        @{ role = "user";   content = "Analiza: darenavelazquez01@gmail.com. Da 3 dorks + pasos legales." }
+        @{ role = "user";   content = "Analiza: darenavelazquez01@gmail.com. Genera 3 Google Dorks éticos + próximos pasos." }
     )
-    max_tokens = 600
+    max_tokens = 400
+    temperature = 0.7
 } | ConvertTo-Json -Depth 4
 
-$headers = @{ "Authorization" = "Bearer $apiKey"; "Content-Type" = "application/json" }
+$headers = @{
+    "Authorization" = "Bearer $apiKey"
+    "Content-Type"  = "application/json"
+}
 
 try {
-    $res = Invoke-RestMethod "https://api.x.ai/v1/chat/completions" -Method Post -Headers $headers -Body $body
-    Write-Host "`nGROK:" -ForegroundColor Green
-    Write-Host $res.choices[0].message.content -ForegroundColor Cyan
-} catch { Write-Error $_.Exception.Message }
+    $response = Invoke-RestMethod -Uri $endpoint -Method Post -Headers $headers -Body $body -TimeoutSec 30
+    Write-Host "`nGROK RESPUESTA:" -ForegroundColor Green
+    Write-Host $response.choices[0].message.content -ForegroundColor Cyan
+    Write-Host "`nTokens usados: $($response.usage.total_tokens)" -ForegroundColor Yellow
+} catch {
+    Write-Error "ERROR API: $($_.Exception.Message)"
+}

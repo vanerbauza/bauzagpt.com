@@ -1,0 +1,128 @@
+﻿<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>BAUZA GPT — OSINT</title>
+<meta name="description" content="Búsqueda OSINT con entrega en PDF y acceso con Google.">
+<style>
+  :root{
+    --bg:#05080f; --card:#0b1220; --text:#e5e7eb; --muted:#a3a3a3;
+    --accent:#22c55e; --accent2:#22d3ee; --ring:#86efac;
+  }
+  *{box-sizing:border-box} html,body{height:100%}
+  body{margin:0; background:
+    radial-gradient(900px 600px at 50% -10%, #10162a 0%, #0a0f1d 40%, #05080f 100%);
+    color:var(--text); font:500 16px/1.55 system-ui,Segoe UI,Roboto,Arial,sans-serif;}
+  .wrap{max-width:1200px;margin:0 auto;padding:24px}
+  header{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .brand{display:flex;align-items:center;gap:12px}
+  .badge{font-weight:800;letter-spacing:2px}
+  .badge span{background:linear-gradient(90deg,#22c55e,#22d3ee);
+    -webkit-background-clip:text;background-clip:text;color:transparent}
+  .card{background:color-mix(in oklab, var(--card) 92%, black 8%);border:1px solid #11182733;
+    border-radius:20px; box-shadow:0 10px 30px #00000055}
+  .hero{margin:28px 0; padding:28px; display:grid; grid-template-columns:1.3fr 1fr; gap:24px}
+  .hero .left{min-height:420px; background:
+      linear-gradient(180deg,#00000055,#000000aa),
+      url("img/portada-oficial-de-bauzaGPT.com.png") center/cover no-repeat;
+    border-radius:20px; border:1px solid #11182755}
+  .hero .right{display:flex;flex-direction:column;gap:16px}
+  h1{font-size:clamp(28px,4vw,42px);margin:0}
+  p.lead{color:var(--muted);margin:0}
+  .search{display:flex;gap:10px}
+  .search input{flex:1; padding:14px 16px;border-radius:12px;border:1px solid #334155;background:#0b1220;color:var(--text);outline:0}
+  .btn{padding:14px 16px;border-radius:12px;border:1px solid #334155;background:#0e1a33;color:var(--text);cursor:pointer}
+  .btn:hover{filter:brightness(1.1)}
+  .btn.acc{border-color:#14532d;background:#05210f}
+  .btn.acc:hover{box-shadow:0 0 0 3px #14532d55}
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:6px}
+  .step{padding:18px;border-radius:14px;border:1px solid #334155;background:#0b1220}
+  .muted{color:var(--muted)}
+  .results{margin-top:12px;display:grid;gap:10px}
+  .res{padding:14px;border-radius:12px;border:1px solid #1f2937;background:#0a1428}
+  footer{margin:36px 0 12px;color:#64748b;font-size:14px;text-align:center}
+  @media (max-width:900px){.hero{grid-template-columns:1fr}.steps{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="badge">BAUZA <span>GPT</span></div>
+      </div>
+      <button class="btn" onclick="loginGoogle()">Acceso con Google</button>
+    </header>
+
+    <section class="hero card">
+      <div class="left"></div>
+      <div class="right">
+        <h1>OSINT que no perdona — <span style="color:#22c55e">busca, verifica y descarga</span>.</h1>
+        <p class="lead">Ingresa tu objetivo. Prueba resultados libres y desbloquea <strong>Premium 20 MXN</strong> para análisis profundo.</p>
+        <div class="search">
+          <input id="q" placeholder="usuario, email, teléfono, dominio...">
+          <button class="btn" onclick="buscar()">Buscar</button>
+          <button class="btn acc" onclick="premium()">Búsqueda Premium 20 MXN</button>
+        </div>
+        <div id="results" class="results"></div>
+      </div>
+    </section>
+
+    <section class="card" style="padding:22px">
+      <h2 style="margin:0 0 8px 0">Cómo funciona</h2>
+      <div class="steps">
+        <div class="step"><strong>1) Inicia sesión</strong><br><span class="muted">Con tu cuenta de Google.</span></div>
+        <div class="step"><strong>2) Carga tu objetivo</strong><br><span class="muted">Escribe y lanza la búsqueda.</span></div>
+        <div class="step"><strong>3) Descarga</strong><br><span class="muted">Obtén PDF con resultados verificados.</span></div>
+      </div>
+    </section>
+
+    <footer>© BAUZA GPT — haciendo preguntas duras para respuestas claras.</footer>
+  </div>
+
+<script>
+let CFG = { apiBase: "http://localhost:8080" };
+
+// Carga config.json si existe
+fetch("config.json").then(async r => { if (r.ok) { CFG = await r.json(); } }).catch(()=>{});
+
+// UI helpers
+const $ = sel => document.querySelector(sel);
+function render(list=[]){
+  const box = $("#results"); box.innerHTML = "";
+  if(!list.length){ box.innerHTML = '<div class="muted">Sin resultados aún.</div>'; return;}
+  list.forEach(it=>{
+    const div = document.createElement("div");
+    div.className="res";
+    div.innerHTML = `<strong>${it.title ?? 'Resultado'}</strong><br>
+      <span class="muted">${it.snippet ?? ''}</span><br>
+      <small>${it.link ? `<a href="${it.link}" target="_blank">abrir</a>`:''} • score: ${it.score ?? 0}</small>`;
+    box.appendChild(div);
+  });
+}
+
+// Acciones
+async function buscar(){
+  const q = $("#q").value.trim();
+  if(!q) return alert("Escribe un objetivo");
+  try{
+    const r = await fetch(`${CFG.apiBase}/search?query=${encodeURIComponent(q)}`);
+    const data = await r.json();
+    render(data.results || []);
+  }catch(e){
+    alert("No se pudo consultar el backend");
+  }
+}
+
+function premium(){
+  alert("Premium (demo): tras pago, se genera PDF con resultados ampliados.");
+}
+
+function loginGoogle(){
+  alert("Login con Google (placeholder). Integraremos Firebase más adelante.");
+}
+
+render([]);
+</script>
+</body>
+</html>
