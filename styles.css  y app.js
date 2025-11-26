@@ -4,5 +4,5 @@
 ├── styles.css
 ├── app.js
 └── assets/
-    ├── banner.jpg    (opcional)
-    └── logo.svg      (opcional)
+    ├── banner.jpg    
+    └── logo.svg      
