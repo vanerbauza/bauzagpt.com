@@ -1,28 +1,18 @@
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
+# Secrets
+.env
+**/.env
 
-node_modules
-dist
-dist-ssr
-*.local
+# Node
+**/node_modules/
 
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-.DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-# outputs
-outputs/
-*.zip
-.venv/
+# Backups / keys
+*.bak
+*.key
+*.pem
+
+# Local dumps with tokens/keys
+*token*.txt
+*api.key*.txt
+stripe*.txt
+hostinguer*.txt
+backup*.txt
