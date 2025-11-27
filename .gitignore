@@ -26,3 +26,8 @@ login.js/
 osint.js/
 config.json
 load-config.js
+
+# keep repo lean: track only /docs
+/*
+!/.gitignore
+!/docs/
