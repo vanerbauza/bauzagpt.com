@@ -1,37 +1,50 @@
- ip dvz187.189.151.183
+<!-- Hero principal silencioso -->
+<section class="hero-minimal">
+  <div class="hero-overlay"></div>
 
- 
- 
- stripe
-clave publicablede : pk_live_51SGxdDGpGxziN87jroMV6vpjGIjwypnN29Rj4Z7c5hTr7cQFdDAj9MjGxPGAoPTYTG29Jtc9l1Q9zGdfzjjrkDte00T0qF9LsS
-clave secreta: sk_live_...IEAf    
+  <!-- Centro: marca + buscador -->
+  <div class="hero-center">
+    <div class="brand">
+      <span class="brand-main">BAUZA</span><span class="brand-sub">GPT</span>
+    </div>
 
- 
- hostinguer apikey token FZv2t8k6S3LLDDuKq4gO6YuQsWpQudL4rkhQBDZT4544870a
-github ID de cliente Ov23liBMUqGDf7B0ZhHs cliente secreto 0780cc274bde2b221089a2d7ca0d50a20f301038
-id precio de strike 1 bauztoken price_1SKLFAGpGxziN87ju3SU0uLF
+    <form class="search-box" id="bauza-search-form">
+      <input
+        type="text"
+        name="query"
+        placeholder="usuario, correo o número"
+        autocomplete="off"
+      />
+      <select name="plan">
+        <option value="basic">basic</option>
+        <option value="premium">premium</option>
+      </select>
+      <button type="submit">buscar</button>
+    </form>
 
-stripe
-clave publicablede : pk_live_51SGxdDGpGxziN87jroMV6vpjGIjwypnN29Rj4Z7c5hTr7cQFdDAj9MjGxPGAoPTYTG29Jtc9l1Q9zGdfzjjrkDte00T0qF9LsS
-clave secreta: sk_live_...IEAf    
+    <div class="small-hint">
+      <span>sin registros · sin charlas · solo resultados</span>
+    </div>
+  </div>
 
-
-git remote set-url origin https://github.com/vanerbauza/bauzagpt.com.git
-git push -u origin principal
- Cuando pida:
- Username: vanerbauza
-Password: <PEGA_TU_PAT_AQUI
-
-
-CLOUDEFLARE
-  account ID   a7737dded5df5e5afb2603d611779101
-  subdominio bauzagpt.workers.dev
-  
-  firebase
-    apiKey: "AIzaSyD3a7cv735RQPYsXMdn4KWQ-NDugL7WyfI",
-  authDomain: "studio-6473341422-75630.firebaseapp.com",
-  projectId: "studio-6473341422-75630",
-  storageBucket: "studio-6473341422-75630.firebasestorage.app",
-  messagingSenderId: "240684953453",
-  appId: "1:240684953453:web:6027f3b025c9ee22e8b464"
-};
+  <!-- Esquina para empleadores / devs -->
+  <aside class="hero-meta">
+    <div class="meta-block">
+      <span class="meta-title">stack</span>
+      <ul>
+        <li>node.js · express</li>
+        <li>google search api</li>
+        <li>pdf reports</li>
+        <li>osint tooling</li>
+      </ul>
+    </div>
+    <a
+      href="https://github.com/vanerbauza/bauzagpt.com"
+      class="meta-link"
+      target="_blank"
+      rel="noreferrer"
+    >
+      github / bauzagpt.com →
+    </a>
+  </aside>
+</section>
