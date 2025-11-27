@@ -109,5 +109,29 @@
       }
     });
   </script>
+  uui<div id="pp-overlay" aria-hidden="true"></div>
+
+<style>
+  #pp-overlay{
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    pointer-events: none;
+    opacity: .35;              /* ajusta 0.15–0.5 */
+    display: none;             /* inicia apagado */
+    background: url("img/mock.png") center top / cover no-repeat;
+    mix-blend-mode: lighten;   /* prueba: normal | difference | lighten */
+    filter: saturate(1.05) contrast(1.05);
+  }
+</style>
+
+<script>
+  // tecla "o" para prender/apagar overlay
+  window.addEventListener("keydown", (e) => {
+    if (e.key.toLowerCase() === "o") {
+      const el = document.getElementById("pp-overlay");
+      el.style.display = (el.style.display === "none" || !el.style.display) ? "block" : "none";
+    }
+  });
 </body>
 </html>
