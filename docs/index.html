@@ -6,10 +6,10 @@
   <meta name="color-scheme" content="dark" />
   <title>bauzagpt</title>
 
-  <!-- tu css -->
+  
   <link rel="stylesheet" href="css/styles.css" />
 
-  <!-- extras mínimos para botón google (no rompe tu css) -->
+  
   <style>
     .hero-actions{
       position:absolute;
@@ -56,7 +56,7 @@
         <button type="submit">buscar</button>
       </form>
 
-      <div class="small-hint">sin registros · sin charlas · solo resultados</div>
+      <div class="small-hint"> solo resultados</div>
     </div>
 
     <aside class="hero-meta" aria-label="stack">
@@ -86,13 +86,13 @@
 
       if (!q) return alert("escribe algo para buscar");
 
-      // sin apis, sin secretos: puro redirect
+      
       if (engine === "shodan") {
         window.open("https://www.shodan.io/search?query=" + encodeURIComponent(q), "_blank", "noopener");
         return;
       }
 
-      // basic/google -> google normal
+    
       window.open("https://www.google.com/search?q=" + encodeURIComponent(q), "_blank", "noopener");
     });
 
@@ -126,7 +126,7 @@
 </style>
 
 <script>
-  // tecla "o" para prender/apagar overlay
+  
   window.addEventListener("keydown", (e) => {
     if (e.key.toLowerCase() === "o") {
       const el = document.getElementById("pp-overlay");
@@ -167,6 +167,7 @@
       </p>
     </header>
   </main>
+  <script type="module" src="./js/login.js"></script>
 </body>
 </html>
 
