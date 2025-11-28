@@ -1,3 +1,61 @@
+// --- FIREBASE AUTH (google) ---
+const firebaseConfig = {
+  apiKey: "AIzaSyD3a7cv735RQPYsXMdn4KWQ-NDugL7WyfI",
+  authDomain: "studio-6473341422-75630.firebaseapp.com",
+  projectId: "studio-6473341422-75630",
+  storageBucket: "studio-6473341422-75630.firebasestorage.app",
+  messagingSenderId: "240684953453",
+  appId: "1:240684953453:web:6027f3b025c9ee22e8b464"
+};
+
+const btnGoogle  = document.getElementById("btn-google");
+const btnLogout  = document.getElementById("btn-logout");
+const authStatus = document.getElementById("auth-status");
+
+function setAuthUI(user) {
+  const ok = !!user;
+  if (btnGoogle) btnGoogle.hidden = ok;
+  if (btnLogout) btnLogout.hidden = !ok;
+  if (authStatus) authStatus.textContent = ok ? (user.email || "sesión iniciada") : "no has iniciado sesión";
+  if (typeof btnSearch !== "undefined" && btnSearch) btnSearch.disabled = !ok; // bloquea buscar si no hay login
+}
+
+let auth = null;
+let provider = null;
+
+try {
+  if (typeof firebase !== "undefined") {
+    if (!firebase.apps?.length) firebase.initializeApp(firebaseConfig);
+    auth = firebase.auth();
+    provider = new firebase.auth.GoogleAuthProvider();
+
+    auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        const token = await user.getIdToken();
+        localStorage.setItem("bauza_token", token);
+      } else {
+        localStorage.removeItem("bauza_token");
+      }
+      setAuthUI(user);
+    });
+
+    btnGoogle?.addEventListener("click", async () => {
+      try { await auth.signInWithPopup(provider); }
+      catch (e) { console.error(e); alert("login falló: " + (e?.message || e)); }
+    });
+
+    btnLogout?.addEventListener("click", async () => {
+      try { await auth.signOut(); }
+      catch (e) { console.error(e); }
+    });
+  } else {
+    setAuthUI(null);
+  }
+} catch (e) {
+  console.error("firebase init error:", e);
+  setAuthUI(null);
+}
+
 // /docs/js/app.js
 const API_BASE = "http://localhost:3000";
 
