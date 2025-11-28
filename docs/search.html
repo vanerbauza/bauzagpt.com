@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>buscar · bauzagpt</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body>
+  <main class="wrap">
+    <header class="bar">
+      <a class="link" href="/">← inicio</a>
+      <div class="grow"></div>
+      <a class="link" href="/login.html">login</a>
+    </header>
+
+    <section class="card">
+      <h1>buscar</h1>
+
+      <label class="label" for="q">dork / query</label>
+      <input id="q" class="input" type="text" placeholder='ej: site:github.com "apiKey" "sk_live"' />
+
+      <div class="row">
+        <div class="col">
+          <label class="label" for="engine">motor</label>
+          <select id="engine" class="select">
+            <option value="google">google</option>
+            <option value="shodan">shodan</option>
+            <option value="both">ambos</option>
+          </select>
+        </div>
+
+        <div class="col">
+          <label class="label" for="mode">modo</label>
+          <select id="mode" class="select">
+            <option value="open">abrir resultados</option>
+            <option value="future_api" disabled>api (próximo)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="cta">
+        <button id="go" class="btn primary" type="button">buscar</button>
+        <button id="copy" class="btn" type="button">copiar</button>
+        <button id="clear" class="btn" type="button">limpiar</button>
+      </div>
+
+      <p id="msg" class="mini"></p>
+    </section>
+  </main>
+
+  <script src="/js/search.js"></script>
+</body>
+</html>
