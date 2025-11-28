@@ -3,171 +3,415 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="color-scheme" content="dark" />
   <title>bauzagpt</title>
-
-  
-  <link rel="stylesheet" href="css/styles.css" />
-
-  
+  <link rel="stylesheet" href="./css/styles.css" />
   <style>
-    .hero-actions{
+    /* ===== landing auth look (home) ===== */
+    :root{
+      --bg:#07080a;
+      --card:#ffffff;
+      --muted:#6b7280;
+      --line:rgba(255,255,255,.10);
+      --teal:#0f766e;
+      --teal2:#0ea5a4;
+      --red:#ff2e2e;
+    }
+
+    body{
+      margin:0;
+      background: var(--bg);
+      color:#e5e7eb;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    }
+
+    .wrap{
+      position:relative;
+      min-height: 100vh;
+      display:grid;
+      place-items:center;
+      padding: 48px 16px;
+      overflow:hidden;
+      background:
+        radial-gradient(900px 520px at 50% 15%, rgba(255,0,0,.14), transparent 60%),
+        radial-gradient(1000px 680px at 50% 90%, rgba(255,0,0,.10), transparent 55%),
+        #07080a;
+    }
+
+    .eyes-bg{
       position:absolute;
-      top: 1.5rem;
-      right: 1.5rem;
+      inset:auto 0 -30px 0;
+      height: 420px;
+      pointer-events:none;
+      opacity: .85;
+      filter: drop-shadow(0 0 45px rgba(255,0,0,.25));
+      background: url("./img/ojos-rojos.png") center bottom / contain no-repeat;
+    }
+
+    .brand{
+      position:absolute;
+      top: 26px;
+      left: 24px;
+      font-weight: 900;
+      letter-spacing: .5px;
+      color: var(--red);
+      text-transform: lowercase;
+      font-size: 22px;
+      text-shadow: 0 0 20px rgba(255,0,0,.22);
+      user-select:none;
+    }
+
+    .top-actions{
+      position:absolute;
+      top: 18px;
+      right: 18px;
+      display:flex;
+      gap:10px;
+      align-items:center;
+    }
+
+    .pill{
+      border: 1px solid rgba(255,255,255,.16);
+      background: rgba(0,0,0,.35);
+      color:#e5e7eb;
+      padding: 10px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+      text-decoration:none;
+    }
+    .pill:hover{ filter: brightness(1.08); }
+
+    .card{
+      width: min(520px, 92vw);
+      background: var(--card);
+      color:#0b0d10;
+      border-radius: 16px;
+      box-shadow: 0 24px 80px rgba(0,0,0,.65);
+      border: 1px solid rgba(0,0,0,.10);
+      padding: 28px 22px;
+      position:relative;
       z-index: 2;
     }
-    .btn-google{
-      border: none;
-      outline: none;
-      cursor: pointer;
-      padding: 0.7rem 1.2rem;
-      border-radius: 999px;
-      font-weight: 700;
-      color: #001018;
-      background: linear-gradient(180deg, #ff3a3a, #b00000);
-      box-shadow: 0 16px 45px rgba(0,0,0,.55);
+
+    .card h1{
+      margin: 0;
+      text-align:center;
+      font-size: 26px;
+      font-weight: 900;
+      letter-spacing: .2px;
+      text-transform: none;
     }
-    .btn-google:hover{ filter: brightness(1.05); }
+    .card p{
+      margin: 8px 0 18px;
+      text-align:center;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .btn-google{
+      width: 100%;
+      height: 48px;
+      border-radius: 10px;
+      border: 0;
+      cursor:pointer;
+      background: linear-gradient(180deg, var(--teal2), var(--teal));
+      color:#fff;
+      font-weight: 800;
+      letter-spacing: .2px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      box-shadow: 0 14px 40px rgba(15,118,110,.35);
+    }
+    .btn-google:hover{ filter: brightness(1.06); }
+
+    .gmark{
+      width: 18px; height: 18px;
+      display:inline-grid;
+      place-items:center;
+      border-radius: 4px;
+      background: rgba(255,255,255,.18);
+      font-weight: 900;
+      font-size: 12px;
+    }
+
+    .divider{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      margin: 18px 0;
+      color: #9ca3af;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+    }
+    .divider::before, .divider::after{
+      content:"";
+      height: 1px;
+      flex: 1;
+      background: rgba(0,0,0,.10);
+    }
+
+    .field{
+      display:grid;
+      gap:8px;
+      margin-bottom: 12px;
+    }
+    .field input{
+      height: 44px;
+      border-radius: 10px;
+      padding: 0 12px;
+      border: 1px solid rgba(0,0,0,.12);
+      outline:0;
+      font-size: 14px;
+    }
+
+    .note{
+      margin: 12px 0 0;
+      font-size: 12px;
+      color: #6b7280;
+      text-align:center;
+    }
+
+    .scroll-down{
+      position:absolute;
+      bottom: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:8px;
+      color: rgba(255,255,255,.75);
+      text-decoration:none;
+      font-size: 12px;
+      z-index: 2;
+    }
+    .chev{
+      width: 36px;
+      height: 36px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.18);
+      display:grid;
+      place-items:center;
+      background: rgba(0,0,0,.35);
+    }
+
+    /* ===== below the fold ===== */
+    .below{
+      position:relative;
+      z-index: 2;
+      padding: 52px 16px 80px;
+      border-top: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(7,8,10,1), rgba(7,8,10,.65));
+    }
+
+    .container{
+      width: min(980px, 94vw);
+      margin: 0 auto;
+      display:grid;
+      gap: 18px;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 14px;
+    }
+
+    .panel{
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.28);
+      border-radius: 16px;
+      padding: 18px;
+    }
+
+    .panel h2{
+      margin:0 0 8px;
+      font-size: 16px;
+      text-transform: lowercase;
+      letter-spacing: .2px;
+    }
+
+    .panel p{
+      margin:0 0 10px;
+      color: rgba(229,231,235,.78);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .list{
+      margin:0;
+      padding-left: 18px;
+      color: rgba(229,231,235,.82);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .steps{
+      display:grid;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .step{
+      padding: 12px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.22);
+      display:flex;
+      gap: 12px;
+      align-items:flex-start;
+    }
+    .step b{
+      display:inline-grid;
+      place-items:center;
+      min-width: 26px;
+      height: 26px;
+      border-radius: 999px;
+      background: rgba(255,0,0,.14);
+      border: 1px solid rgba(255,0,0,.28);
+      color: #ff9b9b;
+      font-size: 13px;
+    }
+    .step div{
+      font-size: 14px;
+      color: rgba(229,231,235,.84);
+      line-height: 1.45;
+    }
+
+    .cta{
+      display:flex;
+      flex-wrap:wrap;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .btn{
+      border: 1px solid rgba(255,255,255,.16);
+      background: rgba(0,0,0,.35);
+      color:#e5e7eb;
+      padding: 12px 14px;
+      border-radius: 12px;
+      font-weight: 800;
+      text-decoration:none;
+      text-transform: lowercase;
+      cursor:pointer;
+    }
+    .btn:hover{ filter: brightness(1.08); }
+
+    .btn-primary{
+      border-color: rgba(255,0,0,.35);
+      background: rgba(255,0,0,.10);
+      color: #ffb4b4;
+    }
+
+    /* layout */
+    .col-6{ grid-column: span 6; }
+    .col-7{ grid-column: span 7; }
+    .col-5{ grid-column: span 5; }
+    .col-12{ grid-column: span 12; }
+
+    @media (max-width: 860px){
+      .brand{ left: 16px; }
+      .col-6,.col-7,.col-5{ grid-column: span 12; }
+    }
   </style>
 </head>
 
 <body>
-  <section class="hero-minimal">
-    <div class="hero-overlay" aria-hidden="true"></div>
+  <div class="wrap" id="top">
+    <div class="brand">bauzagpt</div>
 
-    <div class="hero-actions">
-      <button class="btn-google" id="btn-google" type="button">acceso con google</button>
+    <div class="top-actions">
+      <a class="pill" href="./osint.html">ir a panel</a>
+      <a class="pill" href="#como-usar">cómo usar</a>
     </div>
 
-    <div class="hero-center">
-      <div class="brand" aria-label="bauzagpt">
-        <span class="brand-main">bauzagpt</span>
-        <span class="brand-sub">osint</span>
+    <div class="card" role="region" aria-label="login">
+      <h1>bienvenido a bauzagpt</h1>
+      <p>inicia sesión para continuar</p>
+
+      <button class="btn-google" id="btn-google" type="button">
+        <span class="gmark">g</span>
+        sign in with google
+      </button>
+
+      <div class="divider">or</div>
+
+      <!-- opcional: lo dejamos visual, pero si no usas sms aún, no lo conectes -->
+      <div class="field">
+        <input id="phone-input" placeholder="phone number (e.g. +52...)" disabled />
       </div>
+      <button class="btn-google" id="btn-sms" type="button" disabled>send code</button>
 
-      <form class="search-box" id="search-form" autocomplete="off">
-        <input id="q" name="q" type="text" placeholder="usuario, correo o número" />
-        <select id="engine" name="engine" aria-label="motor">
-          <option value="basic">basic</option>
-          <option value="google">google</option>
-          <option value="shodan">shodan</option>
-        </select>
-        <button type="submit">buscar</button>
-      </form>
-
-      <div class="small-hint"> solo resultados</div>
+      <div class="note" id="login-messages">secure sign-in by firebase</div>
     </div>
 
-    <aside class="hero-meta" aria-label="stack">
-      <div class="meta-block">
-        <div class="meta-title">stack</div>
-        <ul>
-          <li>node.js · express</li>
-          <li>google search api</li>
-          <li>pdf reports</li>
-          <li>osint tooling</li>
-        </ul>
-      </div>
+    <a class="scroll-down" href="#como-usar" aria-label="bajar">
+      <div class="chev">⌄</div>
+      ver guía y curso
+    </a>
 
-      <a class="meta-link" href="https://github.com/vanerbauza/bauzagpt.com" target="_blank" rel="noopener">
-        github / bauzagpt.com →
-      </a>
-    </aside>
-  </section>
+    <div class="eyes-bg" aria-hidden="true"></div>
+  </div>
+
+  <main class="below">
+    <div class="container">
+      <div class="grid" id="como-usar">
+        <section class="panel col-7">
+          <h2>menú de pasos (cómo usar la página)</h2>
+          <p>sin humo: así sacas resultados rápido y sin perderte.</p>
+
+          <div class="steps">
+            <div class="step"><b>1</b><div>inicia sesión con google (arriba). eso desbloquea el panel y premium.</div></div>
+            <div class="step"><b>2</b><div>entra a <a class="pill" href="./osint.html">osint.html</a> y escribe tu consulta (dork, correo, username, ip).</div></div>
+            <div class="step"><b>3</b><div>elige motor (google/shodan) y lanza búsqueda. si estás en “basic”, te limita; premium te abre más.</div></div>
+            <div class="step"><b>4</b><div>revisa resultados, afina el dork y repite. lo normal es 2–3 iteraciones.</div></div>
+            <div class="step"><b>5</b><div>cuando tengas “hit”, exporta evidencia (pdf) o guarda links para tu reporte.</div></div>
+          </div>
+
+          <div class="cta">
+            <a class="btn btn-primary" href="./pago.html">activar premium (20 mxn)</a>
+            <a class="btn" href="./osint.html">ir al panel ahora</a>
+          </div>
+        </section>
+
+        <section class="panel col-5" id="bauzashiel">
+          <h2>curso bauzashiel (mini)</h2>
+          <p>tu training express para operar como pro, sin volverte loco.</p>
+          <ul class="list">
+            <li><b>módulo 1:</b> dorks que sí pegan (operadores, pivoteo, filtros)</li>
+            <li><b>módulo 2:</b> shodan práctico (servicios, puertos, org, geo)</li>
+            <li><b>módulo 3:</b> verificación (capturas, timestamps, reproducibilidad)</li>
+            <li><b>módulo 4:</b> reporte premium (estructura, hallazgos, anexos)</li>
+          </ul>
+
+          <div class="cta">
+            <a class="btn" href="#top">volver arriba</a>
+            <a class="btn btn-primary" href="./pago.html">premium 20 mxn</a>
+          </div>
+        </section>
+
+        <section class="panel col-12">
+          <h2>política de uso</h2>
+          <p>
+            esto es osint: fuentes públicas. úsalo legal y profesional. si el uso no es ético, te va a salir caro
+            (y no hablo de 20 mxn).
+          </p>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <!-- tu login real (ya lo tienes) -->
+  <script type="module" src="./js/login.js"></script>
 
   <script>
-    const $ = (id) => document.getElementById(id);
-
-    $("search-form").addEventListener("submit", (e) => {
-      e.preventDefault();
-      const q = ($("q").value || "").trim();
-      const engine = $("engine").value;
-
-      if (!q) return alert("escribe algo para buscar");
-
-      
-      if (engine === "shodan") {
-        window.open("https://www.shodan.io/search?query=" + encodeURIComponent(q), "_blank", "noopener");
-        return;
-      }
-
-    
-      window.open("https://www.google.com/search?q=" + encodeURIComponent(q), "_blank", "noopener");
-    });
-
-    $("btn-google").addEventListener("click", async () => {
-      try {
-        if (typeof window.bauzaLoginGoogle === "function") {
-          await window.bauzaLoginGoogle();
-        } else {
-          alert("login google aún no está conectado (frontend listo)");
-        }
-      } catch (err) {
-        console.error(err);
-        alert("falló login google (revisa consola)");
-      }
-    });
-  </script>
-  uui<div id="pp-overlay" aria-hidden="true"></div>
-
-<style>
-  #pp-overlay{
-    position: fixed;
-    inset: 0;
-    z-index: 9999;
-    pointer-events: none;
-    opacity: .35;              /* ajusta 0.15–0.5 */
-    display: none;             /* inicia apagado */
-    background: url("img/mock.png") center top / cover no-repeat;
-    mix-blend-mode: lighten;   /* prueba: normal | difference | lighten */
-    filter: saturate(1.05) contrast(1.05);
-  }
-</style>
-
-<script>
-  
-  window.addEventListener("keydown", (e) => {
-    if (e.key.toLowerCase() === "o") {
-      const el = document.getElementById("pp-overlay");
-      el.style.display = (el.style.display === "none" || !el.style.display) ? "block" : "none";
+    // si ya hay token, cambia el mensaje para que se sienta "flujo pro"
+    const msg = document.getElementById("login-messages");
+    if (localStorage.getItem("bauza_token") && msg) {
+      msg.textContent = "sesión detectada. entra al panel osint.";
     }
-  });
+  </script>
 </body>
 </html>
-<!doctype html>
-<html lang="es">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>bauzagpt osint</title>
-  <link rel="stylesheet" href="/css/styles.css" />
-</head>
-<body>
-  <main class="wrap">
-    <header class="hero">
-      <p class="kicker">bauzagpt osint</p>
-      <h1>sin registros · sin charlas · solo resultados</h1>
-      <p class="sub">google + shodan, rápido y limpio. luego metemos premium y reportes.</p>
-
-      <div class="cta">
-        <a class="btn primary" href="/search.html">buscar</a>
-        <a class="btn" href="/login.html">acceso con google</a>
-      </div>
-
-      <ul class="stack">
-        <li>node.js · express</li>
-        <li>google search api</li>
-        <li>pdf reports</li>
-        <li>osint tooling</li>
-      </ul>
-
-      <p class="mini">
-        <a class="link" href="https://github.com" target="_blank" rel="noreferrer">github / bauzagpt.com →</a>
-      </p>
-    </header>
-  </main>
-  <script type="module" src="./js/login.js"></script>
-</body>
-</html>
-
