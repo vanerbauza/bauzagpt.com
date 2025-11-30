@@ -8,44 +8,42 @@
 
   <style>
     :root{
-      --r: #ff0000;
-      --b: #000000;
-      --r10: rgba(255,0,0,.10);
-      --r18: rgba(255,0,0,.18);
-      --r24: rgba(255,0,0,.24);
-      --r35: rgba(255,0,0,.35);
-      --r55: rgba(255,0,0,.55);
-      --r75: rgba(255,0,0,.75);
+      --r:#ff0000;
+      --b:#000000;
+      --r10:rgba(255,0,0,.10);
+      --r18:rgba(255,0,0,.18);
+      --r28:rgba(255,0,0,.28);
+      --r45:rgba(255,0,0,.45);
+      --r65:rgba(255,0,0,.65);
     }
 
     *{ box-sizing:border-box }
     html,body{ height:100% }
     body{
       margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Noto Sans", "Liberation Sans", sans-serif;
-      background: var(--b);
-      color: var(--r);
+      font-family: ui-sans-serif, system-ui, -apple-system, "segoe ui", roboto, arial, sans-serif;
+      background:var(--b);
+      color:var(--r);
       overflow-x:hidden;
     }
 
-    a{ color: var(--r) }
-    ::selection{ background: var(--r); color: var(--b) }
+    a{ color:var(--r); text-decoration:none }
+    ::selection{ background:var(--r); color:var(--b) }
 
-    /* fondo general con glow rojo (sin meter otros colores) */
+    /* glow global (solo rojo) */
     body::before{
       content:"";
       position:fixed; inset:0;
       pointer-events:none;
       background:
-        radial-gradient(60rem 40rem at 50% 15%, var(--r18), transparent 60%),
-        radial-gradient(50rem 35rem at 15% 80%, var(--r10), transparent 60%),
-        radial-gradient(50rem 35rem at 85% 80%, var(--r10), transparent 60%);
-      z-index:-2;
+        radial-gradient(60rem 40rem at 50% 10%, var(--r18), transparent 60%),
+        radial-gradient(50rem 35rem at 15% 85%, var(--r10), transparent 60%),
+        radial-gradient(50rem 35rem at 85% 85%, var(--r10), transparent 60%);
+      z-index:-3;
     }
 
-    /* portada con la imagen */
     .hero{
-      min-height: 100vh;
+      min-height:100vh;
       display:flex;
       align-items:center;
       justify-content:center;
@@ -54,24 +52,21 @@
       isolation:isolate;
     }
 
+    /* portada (imagen + overlay negro) */
     .hero::before{
-      /* imagen de portada */
       content:"";
       position:absolute; inset:0;
       background:
-        radial-gradient(50rem 30rem at 50% 30%, var(--r18), transparent 65%),
+        radial-gradient(60rem 40rem at 50% 20%, var(--r18), transparent 62%),
         url("img/portada.png") center/cover no-repeat;
-      opacity: .95;
-      filter: saturate(1.05);
-      z-index:-1;
+      opacity:.95;
+      z-index:-2;
     }
-
-    /* para que el fondo siga siendo negro si la imagen no carga */
     .hero::after{
       content:"";
       position:absolute; inset:0;
-      background: radial-gradient(60rem 40rem at 50% 20%, var(--r10), var(--b) 60%);
-      z-index:-2;
+      background: linear-gradient(to bottom, rgba(0,0,0,.35), rgba(0,0,0,.85));
+      z-index:-1;
     }
 
     .wrap{
@@ -84,171 +79,171 @@
 
     .brand{
       margin:0;
-      font-size: clamp(3rem, 8vw, 6.2rem);
-      letter-spacing: .02em;
+      font-size: clamp(3.2rem, 9vw, 6.6rem);
+      letter-spacing:.01em;
       text-transform: lowercase;
-      text-shadow:
-        0 0 10px var(--r35),
-        0 0 28px var(--r18);
-      filter: drop-shadow(0 10px 25px rgba(255,0,0,.25));
-    }
-
-    .sub{
-      margin: -0.5rem 0 0;
-      font-size: .95rem;
-      opacity:.9;
-      text-align:center;
-      max-width: 54ch;
+      text-shadow: 0 0 12px var(--r45), 0 0 34px var(--r18);
+      filter: drop-shadow(0 16px 30px rgba(255,0,0,.18));
     }
 
     .panel{
-      width:min(860px, 100%);
-      padding: 1.1rem;
-      background: rgba(0,0,0,.70);
-      border: 1px solid var(--r35);
+      width:min(880px, 100%);
+      padding: 1.2rem;
+      background: rgba(0,0,0,.72);
+      border: 1px solid var(--r28);
       border-radius: 18px;
       box-shadow:
         0 0 0 1px rgba(255,0,0,.10) inset,
-        0 18px 60px rgba(255,0,0,.12);
+        0 18px 70px rgba(255,0,0,.12);
       backdrop-filter: blur(6px);
+      position:relative;
+    }
+
+    /* “ojos” en rojo (solo css) */
+    .eyes{
+      position:absolute;
+      left:50%;
+      bottom:-2.2rem;
+      transform: translateX(-50%);
+      width:min(720px, 92%);
+      height: 6rem;
+      pointer-events:none;
+      opacity:.9;
+      filter: drop-shadow(0 0 18px rgba(255,0,0,.22));
+    }
+    .eye{
+      position:absolute;
+      top:1.1rem;
+      width: 42%;
+      height: 3.2rem;
+      border: 2px solid rgba(255,0,0,.55);
+      border-top: none;
+      border-radius: 0 0 65px 65px;
+      background: rgba(255,0,0,.08);
+      box-shadow: 0 0 30px rgba(255,0,0,.18);
+    }
+    .eye.left{ left:0; transform: skewX(12deg) }
+    .eye.right{ right:0; transform: skewX(-12deg) }
+    .pupil{
+      position:absolute;
+      left:50%;
+      top: 55%;
+      transform: translate(-50%, -50%);
+      width: 34%;
+      height: 55%;
+      border: 2px solid rgba(255,0,0,.55);
+      border-radius: 999px;
+      background: rgba(0,0,0,.55);
     }
 
     .row{
       display:flex;
-      gap: .75rem;
+      gap:.75rem;
       align-items:stretch;
       flex-wrap:wrap;
     }
 
     .search{
       flex: 1 1 360px;
-      position:relative;
       min-width: 260px;
+      position:relative;
     }
-
     .search input{
       width:100%;
       padding: 1rem 1.1rem 1rem 3.1rem;
       border-radius: 999px;
-      border: 1px solid var(--r35);
-      outline: none;
-      background: rgba(0,0,0,.85);
+      border: 1px solid rgba(255,0,0,.45);
+      outline:none;
+      background: rgba(0,0,0,.88);
       color: var(--r);
       font-size: 1rem;
       box-shadow:
         0 0 0 1px rgba(255,0,0,.10) inset,
-        0 10px 30px rgba(255,0,0,.10);
+        0 10px 28px rgba(255,0,0,.12);
     }
     .search input::placeholder{ color: rgba(255,0,0,.55) }
-
-    .search .icon{
+    .icon{
       position:absolute;
       left: 1.05rem;
-      top: 50%;
+      top:50%;
       transform: translateY(-50%);
-      width: 1.25rem; height: 1.25rem;
-      border: 2px solid var(--r55);
+      width: 1.2rem; height: 1.2rem;
+      border: 2px solid rgba(255,0,0,.55);
       border-radius: 999px;
-      box-shadow: 0 0 18px rgba(255,0,0,.18);
     }
-    .search .icon::after{
+    .icon::after{
       content:"";
       position:absolute;
-      width:.7rem; height: 2px;
-      background: var(--r55);
-      right: -0.65rem;
-      bottom: -0.15rem;
+      width:.75rem; height: 2px;
+      background: rgba(255,0,0,.55);
+      right: -0.68rem;
+      bottom: -0.16rem;
       transform: rotate(45deg);
       border-radius: 2px;
     }
 
     .btn{
       cursor:pointer;
-      user-select:none;
       border-radius: 14px;
-      border: 1px solid var(--r55);
-      background: rgba(0,0,0,.80);
+      border: 1px solid rgba(255,0,0,.55);
+      background: rgba(0,0,0,.82);
       color: var(--r);
       padding: .95rem 1.05rem;
-      font-weight: 700;
+      font-weight: 800;
       letter-spacing: .01em;
       text-transform: lowercase;
       box-shadow:
         0 0 0 1px rgba(255,0,0,.12) inset,
         0 12px 30px rgba(255,0,0,.12);
-      transition: transform .08s ease, box-shadow .18s ease, background .18s ease;
-      flex: 0 0 auto;
-      min-width: 220px;
+      transition: transform .08s ease, background .18s ease, box-shadow .18s ease;
+      min-width: 230px;
     }
     .btn:hover{
       background: rgba(255,0,0,.08);
       box-shadow:
         0 0 0 1px rgba(255,0,0,.20) inset,
-        0 18px 50px rgba(255,0,0,.18);
+        0 18px 54px rgba(255,0,0,.18);
     }
     .btn:active{ transform: translateY(1px) }
-
-    .btn.secondary{
-      min-width: 220px;
-      opacity: .95;
-    }
+    .btn:disabled{ opacity:.65; cursor:not-allowed }
 
     .meta{
+      margin-top:.9rem;
       display:flex;
-      flex-wrap:wrap;
       gap:.75rem 1rem;
       align-items:center;
       justify-content:space-between;
-      margin-top:.9rem;
+      flex-wrap:wrap;
       font-size:.92rem;
-      opacity:.9;
+      opacity:.92;
     }
-
     .pill{
-      border: 1px solid var(--r24);
+      border: 1px solid rgba(255,0,0,.28);
       border-radius: 999px;
       padding: .35rem .7rem;
-      background: rgba(0,0,0,.6);
+      background: rgba(0,0,0,.62);
     }
-
-    .status{
-      display:flex;
-      gap:.5rem;
-      align-items:center;
-      justify-content:flex-end;
-      flex: 1 1 auto;
-    }
-
-    .divider{
-      height: 1px;
-      width: 100%;
-      background: rgba(255,0,0,.22);
-      margin: 1.2rem 0 0;
-    }
-
-    .hint{
-      margin: .9rem 0 0;
-      font-size:.92rem;
-      opacity:.9;
-      line-height: 1.35;
-    }
-
     .go-down{
-      margin-top: 1.2rem;
-      font-size:.95rem;
-      opacity:.9;
-      text-decoration:none;
-      padding: .6rem 1rem;
-      border-radius: 999px;
-      border: 1px solid var(--r24);
+      border: 1px solid rgba(255,0,0,.28);
+      padding:.55rem .95rem;
+      border-radius:999px;
       background: rgba(0,0,0,.55);
     }
 
-    /* seccion pasos */
+    .out{
+      margin-top: 1rem;
+      padding: 1rem 1.1rem;
+      border-radius: 18px;
+      border: 1px solid rgba(255,0,0,.28);
+      background: rgba(0,0,0,.70);
+      min-height: 3.4rem;
+      word-break: break-word;
+    }
+
     .section{
-      padding: 4rem 1.25rem 3rem;
+      padding: 5rem 1.25rem 3rem;
       border-top: 1px solid rgba(255,0,0,.18);
-      background: rgba(0,0,0,.85);
+      background: rgba(0,0,0,.92);
     }
     .section .wrap{ align-items:stretch }
     .h2{
@@ -257,52 +252,35 @@
       text-transform: lowercase;
       text-shadow: 0 0 18px rgba(255,0,0,.18);
     }
-
     .plain{
       white-space: pre-wrap;
       line-height: 1.55;
       margin: 0;
       padding: 1rem 1.1rem;
       border-radius: 18px;
-      border: 1px solid var(--r24);
-      background: rgba(0,0,0,.70);
+      border: 1px solid rgba(255,0,0,.28);
+      background: rgba(0,0,0,.75);
       box-shadow: 0 0 0 1px rgba(255,0,0,.08) inset;
     }
 
-    .out{
-      margin-top: 1rem;
-      padding: 1rem 1.1rem;
-      border-radius: 18px;
-      border: 1px solid var(--r24);
-      background: rgba(0,0,0,.70);
-      min-height: 3.4rem;
-      word-break: break-word;
-    }
-
     footer{
-      padding: 2.5rem 1.25rem 3rem;
+      padding: 2.4rem 1.25rem 3rem;
       border-top: 1px solid rgba(255,0,0,.18);
-      background: rgba(0,0,0,.92);
+      background: rgba(0,0,0,.96);
     }
     .legal{
       width:min(980px, 100%);
       margin: 0 auto;
       font-size: .78rem;
-      opacity:.85;
+      opacity:.86;
       line-height: 1.55;
       text-transform: lowercase;
     }
 
-    .tiny-link{
-      opacity:.9;
-      text-decoration:none;
-      border-bottom: 1px dotted rgba(255,0,0,.35);
-    }
-
     @media (max-width: 520px){
-      .btn{ min-width: 100% }
+      .btn{ min-width:100% }
       .meta{ flex-direction:column; align-items:flex-start }
-      .status{ justify-content:flex-start }
+      .eyes{ bottom:-2.6rem; height: 6.6rem; }
     }
   </style>
 </head>
@@ -311,14 +289,13 @@
   <main class="hero" id="inicio">
     <div class="wrap">
       <h1 class="brand">bauzagpt</h1>
-      <p class="sub">osint premium: tu input + nuestra automatización = reporte pdf listo para imprimir.</p>
 
-      <div class="panel" role="region" aria-label="búsqueda premium">
+      <div class="panel" aria-label="búsqueda premium">
         <div class="row">
           <div class="search">
             <span class="icon" aria-hidden="true"></span>
             <input id="q" type="text" inputmode="search" autocomplete="off"
-              placeholder="pega aquí tu objetivo, dork o contexto (ej: nombre + ciudad + empresa)"
+              placeholder="escribe tu objetivo / dork / contexto"
               aria-label="texto de búsqueda" />
           </div>
 
@@ -326,25 +303,22 @@
             búsqueda premium · 20 mxn
           </button>
 
-          <button id="btn-google" class="btn secondary" type="button">
+          <button id="btn-google" class="btn" type="button">
             acceso con google
           </button>
         </div>
 
         <div class="meta">
-          <span class="pill">un solo plan. un solo flujo. cero drama.</span>
-          <div class="status">
-            <span class="pill" id="session-pill">sesión: no iniciada</span>
-            <a class="go-down" href="#pasos">ver pasos ↓</a>
-          </div>
+          <span class="pill" id="session">sesión: no iniciada</span>
+          <a class="go-down" href="#pasos">ver pasos ↓</a>
         </div>
 
-        <div class="divider" aria-hidden="true"></div>
-        <p class="hint">
-          tip ejecutivo: inicia sesión primero para que el backend pueda firmar el flujo de pago y generar el pdf sin “baches operativos”.
-        </p>
-
         <div class="out" id="out" aria-live="polite"></div>
+
+        <div class="eyes" aria-hidden="true">
+          <div class="eye left"><div class="pupil"></div></div>
+          <div class="eye right"><div class="pupil"></div></div>
+        </div>
       </div>
     </div>
   </main>
@@ -355,85 +329,50 @@
       <pre class="plain">1) inicia sesión con google (registro automático).
 2) escribe tu objetivo / dork / contexto en el cuadro de búsqueda.
 3) presiona "búsqueda premium · 20 mxn".
-4) se abre el pago (20 mxn por búsqueda) y confirmas.
-5) el sistema corre la búsqueda + análisis y arma el reporte pdf.
-6) se entrega un link de descarga del pdf (y queda trazabilidad de tu orden).
+4) se te manda a pago y confirmas (20 mxn por búsqueda).
+5) al confirmar, se procesa la búsqueda y se prepara el reporte.
+6) recibes el pdf (link de descarga) y queda registro de la orden.
 
-nota: si tu input es basura, tu reporte saldrá “corporativamente optimista” pero no mágico. escribe bien, y el output sube de nivel.</pre>
-
-      <h2 class="h2" style="margin-top:1.25rem;">salida</h2>
-      <pre class="plain">- pdf con hallazgos, links, contexto y notas.
-- orden y control: cada búsqueda = 1 pago = 1 reporte.
-- enfoque osint: público y verificable (nada de hacks, nada de fantasías).</pre>
+nota: esto es osint. magia no vendemos. claridad en input = calidad en output.</pre>
     </div>
   </section>
 
   <footer>
     <div class="legal">
-      <div style="margin-bottom:.65rem;">
-        <a class="tiny-link" href="#inicio">inicio</a> ·
-        <a class="tiny-link" href="#pasos">pasos</a>
-      </div>
-
-      <div>
-        aviso legal: bauzagpt entrega reportes informativos basados en fuentes públicas y/o insumos del usuario.
-        no es asesoría legal ni garantía de resultados. el usuario es responsable del uso del servicio y del cumplimiento
-        de leyes aplicables. precio: 20 mxn por búsqueda premium (monto final puede variar por comisiones del procesador
-        de pago o impuestos según aplique). al usar esta página aceptas términos, condiciones y política de privacidad.
-      </div>
-
-      <div style="margin-top:.8rem; opacity:.9;">
-        soporte: <span id="support" class="pill">contacto@tu-dominio.com</span>
-      </div>
+      aviso legal: bauzagpt ofrece resultados informativos basados en fuentes públicas y/o insumos del usuario.
+      no es asesoría legal ni garantía de resultados. el usuario es responsable del uso y cumplimiento de leyes aplicables.
+      precio: 20 mxn por búsqueda premium (pueden aplicar comisiones/impuestos del procesador).
+      al usar este sitio aceptas términos, condiciones y política de privacidad.
     </div>
   </footer>
 
-  <noscript>
-    <div style="padding:1rem; border-top:1px solid rgba(255,0,0,.2); background:#000; color:#f00;">
-      esta página requiere javascript para iniciar sesión y procesar la búsqueda.
-    </div>
-  </noscript>
-
   <script type="module">
-    // ========= configuración =========
-    // 1) firebase web config (no es “secreto”, pero sí debe ser el tuyo)
+    const out = document.getElementById("out");
+    const q = document.getElementById("q");
+    const btnGoogle = document.getElementById("btn-google");
+    const btnPremium = document.getElementById("btn-premium");
+    const session = document.getElementById("session");
+
+    const say = (m) => out.textContent = m;
+    const fail = (m) => out.textContent = "error: " + m;
+    const busy = (x) => {
+      btnGoogle.disabled = x;
+      btnPremium.disabled = x;
+    };
+
+    // si ya tienes tu login armado en otro lado, aquí solo redirecciona:
+    // btnGoogle.onclick = () => location.href = "login.html";
+
+    // ✅ login directo con firebase (solo necesitas llenar firebaseConfig)
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+
     const firebaseConfig = {
       apiKey: "pon-tu-api-key",
       authDomain: "pon-tu-auth-domain",
       projectId: "pon-tu-project-id",
-      appId: "pon-tu-app-id",
+      appId: "pon-tu-app-id"
     };
-
-    // 2) backend para pago + pdf (recomendación: cloud run / render / fly / tu vps)
-    // si tu backend vive en el mismo dominio vía cloudflare proxy, deja "/".
-    const API_BASE = "/"; // ejemplo: "https://api.bauzagpt.com" o "/"
-
-    // ========= ui helpers =========
-    const $ = (id) => document.getElementById(id);
-    const out = $("out");
-    const q = $("q");
-    const btnGoogle = $("btn-google");
-    const btnPremium = $("btn-premium");
-    const sessionPill = $("session-pill");
-
-    const say = (msg) => { out.textContent = msg; };
-    const fail = (msg) => { out.textContent = "error: " + msg; };
-
-    const setBusy = (busy) => {
-      btnPremium.disabled = busy;
-      btnGoogle.disabled = busy;
-      btnPremium.style.opacity = busy ? ".7" : "1";
-      btnGoogle.style.opacity = busy ? ".7" : "1";
-    };
-
-    // ========= firebase auth (modular) =========
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-    import {
-      getAuth,
-      GoogleAuthProvider,
-      signInWithPopup,
-      onAuthStateChanged
-    } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
@@ -444,89 +383,44 @@ nota: si tu input es basura, tu reporte saldrá “corporativamente optimista”
     onAuthStateChanged(auth, async (user) => {
       if (!user) {
         idToken = null;
-        sessionPill.textContent = "sesión: no iniciada";
+        session.textContent = "sesión: no iniciada";
         return;
       }
       idToken = await user.getIdToken();
       const name = (user.displayName || "usuario").toLowerCase();
-      sessionPill.textContent = "sesión: " + name;
+      session.textContent = "sesión: " + name;
     });
 
     btnGoogle.addEventListener("click", async () => {
       try{
-        setBusy(true);
+        busy(true);
         say("abriendo google…");
         const { user } = await signInWithPopup(auth, provider);
         idToken = await user.getIdToken();
-        say("sesión iniciada. ya puedes correr la búsqueda premium.");
+        say("sesión iniciada. ahora sí: búsqueda premium.");
       }catch(e){
         fail(e?.message || "no se pudo iniciar sesión");
       }finally{
-        setBusy(false);
+        busy(false);
       }
     });
 
-    // ========= flujo premium =========
-    // esperable del backend:
-    // POST /api/premium-search
-    // body: { query: string }
-    // headers: authorization: "bearer <firebase_id_token>"
-    // response: { pdf_url: "https://..." }  (o { checkout_url: "https://..." })
-    btnPremium.addEventListener("click", async () => {
+    // flujo premium simple: guardar query y mandar a pago.html
+    btnPremium.addEventListener("click", () => {
       const query = (q.value || "").trim();
       if (!query) return fail("escribe algo en el cuadro de búsqueda.");
+      if (!idToken) return fail("primero: acceso con google.");
 
-      if (!idToken) {
-        return fail("inicia sesión con google primero (control de acceso).");
-      }
-
-      try{
-        setBusy(true);
-        say("ejecutando flujo premium… (pago → búsqueda → pdf)");
-
-        const res = await fetch(API_BASE.replace(/\/$/, "") + "/api/premium-search", {
-          method: "POST",
-          headers: {
-            "content-type": "application/json",
-            "authorization": "bearer " + idToken
-          },
-          body: JSON.stringify({ query })
-        });
-
-        const data = await res.json().catch(() => ({}));
-        if (!res.ok) {
-          throw new Error(data?.error || ("http " + res.status));
-        }
-
-        // el backend puede regresarte:
-        // - checkout_url (si primero pagas)
-        // - pdf_url (si ya está listo)
-        if (data.checkout_url) {
-          say("abriendo pago…");
-          window.location.href = data.checkout_url;
-          return;
-        }
-
-        if (data.pdf_url) {
-          out.innerHTML = "pdf listo: " +
-            `<a href="${data.pdf_url}" class="tiny-link" target="_blank" rel="noopener">descargar reporte</a>`;
-          return;
-        }
-
-        say("ok: flujo ejecutado, pero el backend no regresó pdf_url / checkout_url. revisa tu endpoint.");
-      }catch(e){
-        fail(e?.message || "falló el flujo premium");
-      }finally{
-        setBusy(false);
-      }
+      localStorage.setItem("bauza_query", query);
+      // si tu pago.html ya existe, úsalo:
+      location.href = "pago.html?monto=20&q=" + encodeURIComponent(query);
     });
 
-    // pequeño “easter” corporativo: enter = ejecutar
     q.addEventListener("keydown", (ev) => {
       if (ev.key === "Enter") btnPremium.click();
     });
 
-    say("listo. inicia sesión y ejecuta tu primera búsqueda premium.");
+    say("listo. inicia sesión y ejecuta tu búsqueda premium.");
   </script>
 </body>
 </html>
