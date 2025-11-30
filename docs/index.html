@@ -48,7 +48,7 @@
       </div>
 
       <div class="small-hint">
-        tip: primero inicia sesión, luego ejecuta premium. “governance” antes del caos.
+        tip: primero inicia sesión, luego ejecuta premium. “gobernanza” antes del caos.
       </div>
     </section>
   </main>
@@ -59,11 +59,9 @@
       <pre class="plain">1) inicia sesión con google (registro automático).
 2) escribe tu objetivo / dork / contexto en el cuadro de búsqueda.
 3) presiona "búsqueda premium · 20 mxn".
-4) se envía a pago y confirmas (20 mxn por búsqueda).
-5) se procesa la búsqueda y se arma el reporte.
-6) recibes el pdf (link de descarga) y queda registro de la orden.
-
-nota: esto es osint. magia no vendemos. claridad en input = calidad en output.</pre>
+4) pagas con stripe y confirmas (20 mxn).
+5) al volver, se habilita tu token / flujo premium.
+6) recibes el pdf (link) cuando el sistema lo libere.</pre>
     </div>
   </section>
 
@@ -71,8 +69,7 @@ nota: esto es osint. magia no vendemos. claridad en input = calidad en output.</
     <div class="legal">
       aviso legal: bauzagpt ofrece resultados informativos basados en fuentes públicas y/o insumos del usuario.
       no es asesoría legal ni garantía de resultados. el usuario es responsable del uso y del cumplimiento de leyes aplicables.
-      precio: 20 mxn por búsqueda premium (pueden aplicar comisiones/impuestos del procesador).
-      al usar este sitio aceptas términos, condiciones y política de privacidad.
+      precio: 20 mxn por búsqueda/token. al usar este sitio aceptas términos, condiciones y política de privacidad.
     </div>
   </footer>
 
@@ -90,31 +87,36 @@ nota: esto es osint. magia no vendemos. claridad en input = calidad en output.</
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
     import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 
-    // pega aquí tu config web de firebase (solo pública). no pongas claves secretas.
+    // firebase web config (pública)
     const firebaseConfig = {
-  apiKey: "AIzaSyD3a7cv735RQPYsXMdn4KWQ-NDugL7WyfI",
-  authDomain: "studio-6473341422-75630.firebaseapp.com",
-  projectId: "studio-6473341422-75630",
-  storageBucket: "studio-6473341422-75630.firebasestorage.app",
-  messagingSenderId: "240684953453",
-  appId: "1:240684953453:web:6027f3b025c9ee22e8b464"
-};
+      apiKey: "AIzaSyD3a7cv735RQPYsXMdn4KWQ-NDugL7WyfI",
+      authDomain: "studio-6473341422-75630.firebaseapp.com",
+      projectId: "studio-6473341422-75630",
+      storageBucket: "studio-6473341422-75630.firebasestorage.app",
+      messagingSenderId: "240684953453",
+      appId: "1:240684953453:web:6027f3b025c9ee22e8b464"
+    };
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const provider = new GoogleAuthProvider();
 
     let idToken = null;
+    let uid = null;
 
     onAuthStateChanged(auth, async (user) => {
       if (!user) {
         idToken = null;
+        uid = null;
         session.textContent = "sesión: no iniciada";
         localStorage.removeItem("bauza_token");
+        localStorage.removeItem("bauza_uid");
         return;
       }
+      uid = user.uid;
       idToken = await user.getIdToken();
       localStorage.setItem("bauza_token", idToken);
+      localStorage.setItem("bauza_uid", uid);
       session.textContent = "sesión: " + ((user.displayName || "usuario").toLowerCase());
       say("sesión iniciada. listo para premium.");
     });
@@ -124,8 +126,10 @@ nota: esto es osint. magia no vendemos. claridad en input = calidad en output.</
         busy(true);
         say("abriendo google…");
         const { user } = await signInWithPopup(auth, provider);
+        uid = user.uid;
         idToken = await user.getIdToken();
         localStorage.setItem("bauza_token", idToken);
+        localStorage.setItem("bauza_uid", uid);
         say("sesión iniciada. ahora sí: búsqueda premium.");
       }catch(e){
         fail(e?.message || "no se pudo iniciar sesión");
@@ -134,15 +138,61 @@ nota: esto es osint. magia no vendemos. claridad en input = calidad en output.</
       }
     });
 
-    btnPremium.addEventListener("click", () => {
+    // ===== stripe (frontend) =====
+    // IMPORTANTE:
+    // - aquí NO van secretos de stripe
+    // - esto llama a TU backend (firebase functions) que crea el checkout
+    //
+    // si publicas Firebase Functions con nombre "api", la URL suele ser:
+    // https://us-central1-studio-6473341422-75630.cloudfunctions.net/api
+    const API_BASE = "https://us-central1-studio-6473341422-75630.cloudfunctions.net/api";
+
+    async function abrirCheckoutStripe(query) {
+      if (!idToken) throw new Error("primero: acceso con google.");
+
+      // guardamos el query para usarlo después del pago (success.html o vuelta al home)
+      localStorage.setItem("bauza_query", query);
+
+      // OJO: según como montes tu Express en Functions, puede ser:
+      //   API_BASE + "/api/buy-token"  (si tus rutas empiezan con /api/...)
+      // o
+      //   API_BASE + "/buy-token"      (si tus rutas empiezan directo)
+      //
+      // aquí asumimos /api/buy-token:
+      const endpoint = API_BASE + "/api/buy-token";
+
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          "authorization": "bearer " + idToken
+        },
+        body: JSON.stringify({ query })
+      });
+
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data?.error || ("checkout error http " + res.status));
+
+      localStorage.setItem("bauza_order_id", data.order_id || "");
+      if (!data.checkout_url) throw new Error("backend no devolvió checkout_url");
+
+      window.location.href = data.checkout_url;
+    }
+
+    btnPremium.addEventListener("click", async () => {
       const query = (q.value || "").trim();
       if (!query) return fail("escribe algo en el cuadro de búsqueda.");
       if (!idToken) return fail("primero: acceso con google.");
 
-      localStorage.setItem("bauza_query", query);
-
-      // si ya tienes pago.html, lo mandamos ahí
-      location.href = "pago.html?monto=20&q=" + encodeURIComponent(query);
+      try{
+        busy(true);
+        say("abriendo pago stripe…");
+        await abrirCheckoutStripe(query);
+      }catch(e){
+        fail(e?.message || "falló abrir pago");
+      }finally{
+        busy(false);
+      }
     });
 
     q.addEventListener("keydown", (ev) => {
