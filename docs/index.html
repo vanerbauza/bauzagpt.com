@@ -386,12 +386,14 @@ nota: esto es osint. magia no vendemos. claridad en input = calidad en output.</
     import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 
     // ⚠️ pega aquí TU web config de firebase (solo pública). no pongas claves secretas.
-    const firebaseConfig = {
-      apiKey: "pon-tu-api-key",
-      authDomain: "pon-tu-auth-domain",
-      projectId: "pon-tu-project-id",
-      appId: "pon-tu-app-id"
-    };
+ const firebaseConfig = {
+  apiKey: "AIzaSyD3a7cv735RQPYsXMdn4KWQ-NDugL7WyfI",
+  authDomain: "studio-6473341422-75630.firebaseapp.com",
+  projectId: "studio-6473341422-75630",
+  storageBucket: "studio-6473341422-75630.firebasestorage.app",
+  messagingSenderId: "240684953453",
+  appId: "1:240684953453:web:6027f3b025c9ee22e8b464"
+};
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
