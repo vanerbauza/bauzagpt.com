@@ -3,415 +3,530 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="description" content="bauzagpt · osint premium" />
   <title>bauzagpt</title>
-  <link rel="stylesheet" href="./css/styles.css" />
+
   <style>
-    /* ===== landing auth look (home) ===== */
     :root{
-      --bg:#07080a;
-      --card:#ffffff;
-      --muted:#6b7280;
-      --line:rgba(255,255,255,.10);
-      --teal:#0f766e;
-      --teal2:#0ea5a4;
-      --red:#ff2e2e;
+      --r: #ff0000;
+      --b: #000000;
+      --r10: rgba(255,0,0,.10);
+      --r18: rgba(255,0,0,.18);
+      --r24: rgba(255,0,0,.24);
+      --r35: rgba(255,0,0,.35);
+      --r55: rgba(255,0,0,.55);
+      --r75: rgba(255,0,0,.75);
     }
 
+    *{ box-sizing:border-box }
+    html,body{ height:100% }
     body{
       margin:0;
-      background: var(--bg);
-      color:#e5e7eb;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Noto Sans", "Liberation Sans", sans-serif;
+      background: var(--b);
+      color: var(--r);
+      overflow-x:hidden;
     }
 
-    .wrap{
-      position:relative;
-      min-height: 100vh;
-      display:grid;
-      place-items:center;
-      padding: 48px 16px;
-      overflow:hidden;
-      background:
-        radial-gradient(900px 520px at 50% 15%, rgba(255,0,0,.14), transparent 60%),
-        radial-gradient(1000px 680px at 50% 90%, rgba(255,0,0,.10), transparent 55%),
-        #07080a;
-    }
+    a{ color: var(--r) }
+    ::selection{ background: var(--r); color: var(--b) }
 
-    .eyes-bg{
-      position:absolute;
-      inset:auto 0 -30px 0;
-      height: 420px;
+    /* fondo general con glow rojo (sin meter otros colores) */
+    body::before{
+      content:"";
+      position:fixed; inset:0;
       pointer-events:none;
-      opacity: .85;
-      filter: drop-shadow(0 0 45px rgba(255,0,0,.25));
-      background: url("./img/ojos-rojos.png") center bottom / contain no-repeat;
+      background:
+        radial-gradient(60rem 40rem at 50% 15%, var(--r18), transparent 60%),
+        radial-gradient(50rem 35rem at 15% 80%, var(--r10), transparent 60%),
+        radial-gradient(50rem 35rem at 85% 80%, var(--r10), transparent 60%);
+      z-index:-2;
     }
 
-    .brand{
-      position:absolute;
-      top: 26px;
-      left: 24px;
-      font-weight: 900;
-      letter-spacing: .5px;
-      color: var(--red);
-      text-transform: lowercase;
-      font-size: 22px;
-      text-shadow: 0 0 20px rgba(255,0,0,.22);
-      user-select:none;
-    }
-
-    .top-actions{
-      position:absolute;
-      top: 18px;
-      right: 18px;
-      display:flex;
-      gap:10px;
-      align-items:center;
-    }
-
-    .pill{
-      border: 1px solid rgba(255,255,255,.16);
-      background: rgba(0,0,0,.35);
-      color:#e5e7eb;
-      padding: 10px 12px;
-      border-radius: 999px;
-      font-size: 13px;
-      text-decoration:none;
-    }
-    .pill:hover{ filter: brightness(1.08); }
-
-    .card{
-      width: min(520px, 92vw);
-      background: var(--card);
-      color:#0b0d10;
-      border-radius: 16px;
-      box-shadow: 0 24px 80px rgba(0,0,0,.65);
-      border: 1px solid rgba(0,0,0,.10);
-      padding: 28px 22px;
-      position:relative;
-      z-index: 2;
-    }
-
-    .card h1{
-      margin: 0;
-      text-align:center;
-      font-size: 26px;
-      font-weight: 900;
-      letter-spacing: .2px;
-      text-transform: none;
-    }
-    .card p{
-      margin: 8px 0 18px;
-      text-align:center;
-      color: var(--muted);
-      font-size: 14px;
-    }
-
-    .btn-google{
-      width: 100%;
-      height: 48px;
-      border-radius: 10px;
-      border: 0;
-      cursor:pointer;
-      background: linear-gradient(180deg, var(--teal2), var(--teal));
-      color:#fff;
-      font-weight: 800;
-      letter-spacing: .2px;
+    /* portada con la imagen */
+    .hero{
+      min-height: 100vh;
       display:flex;
       align-items:center;
       justify-content:center;
-      gap:10px;
-      box-shadow: 0 14px 40px rgba(15,118,110,.35);
-    }
-    .btn-google:hover{ filter: brightness(1.06); }
-
-    .gmark{
-      width: 18px; height: 18px;
-      display:inline-grid;
-      place-items:center;
-      border-radius: 4px;
-      background: rgba(255,255,255,.18);
-      font-weight: 900;
-      font-size: 12px;
+      padding: 3rem 1.25rem 2.5rem;
+      position:relative;
+      isolation:isolate;
     }
 
-    .divider{
-      display:flex;
-      align-items:center;
-      gap:12px;
-      margin: 18px 0;
-      color: #9ca3af;
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: .8px;
-    }
-    .divider::before, .divider::after{
+    .hero::before{
+      /* imagen de portada */
       content:"";
-      height: 1px;
-      flex: 1;
-      background: rgba(0,0,0,.10);
+      position:absolute; inset:0;
+      background:
+        radial-gradient(50rem 30rem at 50% 30%, var(--r18), transparent 65%),
+        url("img/portada.png") center/cover no-repeat;
+      opacity: .95;
+      filter: saturate(1.05);
+      z-index:-1;
     }
 
-    .field{
-      display:grid;
-      gap:8px;
-      margin-bottom: 12px;
-    }
-    .field input{
-      height: 44px;
-      border-radius: 10px;
-      padding: 0 12px;
-      border: 1px solid rgba(0,0,0,.12);
-      outline:0;
-      font-size: 14px;
+    /* para que el fondo siga siendo negro si la imagen no carga */
+    .hero::after{
+      content:"";
+      position:absolute; inset:0;
+      background: radial-gradient(60rem 40rem at 50% 20%, var(--r10), var(--b) 60%);
+      z-index:-2;
     }
 
-    .note{
-      margin: 12px 0 0;
-      font-size: 12px;
-      color: #6b7280;
-      text-align:center;
-    }
-
-    .scroll-down{
-      position:absolute;
-      bottom: 18px;
-      left: 50%;
-      transform: translateX(-50%);
+    .wrap{
+      width:min(980px, 100%);
       display:flex;
       flex-direction:column;
+      gap: 1.25rem;
       align-items:center;
-      gap:8px;
-      color: rgba(255,255,255,.75);
-      text-decoration:none;
-      font-size: 12px;
-      z-index: 2;
-    }
-    .chev{
-      width: 36px;
-      height: 36px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.18);
-      display:grid;
-      place-items:center;
-      background: rgba(0,0,0,.35);
     }
 
-    /* ===== below the fold ===== */
-    .below{
-      position:relative;
-      z-index: 2;
-      padding: 52px 16px 80px;
-      border-top: 1px solid var(--line);
-      background: linear-gradient(180deg, rgba(7,8,10,1), rgba(7,8,10,.65));
+    .brand{
+      margin:0;
+      font-size: clamp(3rem, 8vw, 6.2rem);
+      letter-spacing: .02em;
+      text-transform: lowercase;
+      text-shadow:
+        0 0 10px var(--r35),
+        0 0 28px var(--r18);
+      filter: drop-shadow(0 10px 25px rgba(255,0,0,.25));
     }
 
-    .container{
-      width: min(980px, 94vw);
-      margin: 0 auto;
-      display:grid;
-      gap: 18px;
-    }
-
-    .grid{
-      display:grid;
-      grid-template-columns: repeat(12, 1fr);
-      gap: 14px;
+    .sub{
+      margin: -0.5rem 0 0;
+      font-size: .95rem;
+      opacity:.9;
+      text-align:center;
+      max-width: 54ch;
     }
 
     .panel{
-      border: 1px solid rgba(255,255,255,.12);
-      background: rgba(0,0,0,.28);
-      border-radius: 16px;
-      padding: 18px;
+      width:min(860px, 100%);
+      padding: 1.1rem;
+      background: rgba(0,0,0,.70);
+      border: 1px solid var(--r35);
+      border-radius: 18px;
+      box-shadow:
+        0 0 0 1px rgba(255,0,0,.10) inset,
+        0 18px 60px rgba(255,0,0,.12);
+      backdrop-filter: blur(6px);
     }
 
-    .panel h2{
-      margin:0 0 8px;
-      font-size: 16px;
-      text-transform: lowercase;
-      letter-spacing: .2px;
-    }
-
-    .panel p{
-      margin:0 0 10px;
-      color: rgba(229,231,235,.78);
-      font-size: 14px;
-      line-height: 1.5;
-    }
-
-    .list{
-      margin:0;
-      padding-left: 18px;
-      color: rgba(229,231,235,.82);
-      font-size: 14px;
-      line-height: 1.55;
-    }
-
-    .steps{
-      display:grid;
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    .step{
-      padding: 12px 12px;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(0,0,0,.22);
+    .row{
       display:flex;
-      gap: 12px;
-      align-items:flex-start;
-    }
-    .step b{
-      display:inline-grid;
-      place-items:center;
-      min-width: 26px;
-      height: 26px;
-      border-radius: 999px;
-      background: rgba(255,0,0,.14);
-      border: 1px solid rgba(255,0,0,.28);
-      color: #ff9b9b;
-      font-size: 13px;
-    }
-    .step div{
-      font-size: 14px;
-      color: rgba(229,231,235,.84);
-      line-height: 1.45;
+      gap: .75rem;
+      align-items:stretch;
+      flex-wrap:wrap;
     }
 
-    .cta{
+    .search{
+      flex: 1 1 360px;
+      position:relative;
+      min-width: 260px;
+    }
+
+    .search input{
+      width:100%;
+      padding: 1rem 1.1rem 1rem 3.1rem;
+      border-radius: 999px;
+      border: 1px solid var(--r35);
+      outline: none;
+      background: rgba(0,0,0,.85);
+      color: var(--r);
+      font-size: 1rem;
+      box-shadow:
+        0 0 0 1px rgba(255,0,0,.10) inset,
+        0 10px 30px rgba(255,0,0,.10);
+    }
+    .search input::placeholder{ color: rgba(255,0,0,.55) }
+
+    .search .icon{
+      position:absolute;
+      left: 1.05rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 1.25rem; height: 1.25rem;
+      border: 2px solid var(--r55);
+      border-radius: 999px;
+      box-shadow: 0 0 18px rgba(255,0,0,.18);
+    }
+    .search .icon::after{
+      content:"";
+      position:absolute;
+      width:.7rem; height: 2px;
+      background: var(--r55);
+      right: -0.65rem;
+      bottom: -0.15rem;
+      transform: rotate(45deg);
+      border-radius: 2px;
+    }
+
+    .btn{
+      cursor:pointer;
+      user-select:none;
+      border-radius: 14px;
+      border: 1px solid var(--r55);
+      background: rgba(0,0,0,.80);
+      color: var(--r);
+      padding: .95rem 1.05rem;
+      font-weight: 700;
+      letter-spacing: .01em;
+      text-transform: lowercase;
+      box-shadow:
+        0 0 0 1px rgba(255,0,0,.12) inset,
+        0 12px 30px rgba(255,0,0,.12);
+      transition: transform .08s ease, box-shadow .18s ease, background .18s ease;
+      flex: 0 0 auto;
+      min-width: 220px;
+    }
+    .btn:hover{
+      background: rgba(255,0,0,.08);
+      box-shadow:
+        0 0 0 1px rgba(255,0,0,.20) inset,
+        0 18px 50px rgba(255,0,0,.18);
+    }
+    .btn:active{ transform: translateY(1px) }
+
+    .btn.secondary{
+      min-width: 220px;
+      opacity: .95;
+    }
+
+    .meta{
       display:flex;
       flex-wrap:wrap;
-      gap: 10px;
-      margin-top: 12px;
+      gap:.75rem 1rem;
+      align-items:center;
+      justify-content:space-between;
+      margin-top:.9rem;
+      font-size:.92rem;
+      opacity:.9;
     }
-    .btn{
-      border: 1px solid rgba(255,255,255,.16);
-      background: rgba(0,0,0,.35);
-      color:#e5e7eb;
-      padding: 12px 14px;
-      border-radius: 12px;
-      font-weight: 800;
+
+    .pill{
+      border: 1px solid var(--r24);
+      border-radius: 999px;
+      padding: .35rem .7rem;
+      background: rgba(0,0,0,.6);
+    }
+
+    .status{
+      display:flex;
+      gap:.5rem;
+      align-items:center;
+      justify-content:flex-end;
+      flex: 1 1 auto;
+    }
+
+    .divider{
+      height: 1px;
+      width: 100%;
+      background: rgba(255,0,0,.22);
+      margin: 1.2rem 0 0;
+    }
+
+    .hint{
+      margin: .9rem 0 0;
+      font-size:.92rem;
+      opacity:.9;
+      line-height: 1.35;
+    }
+
+    .go-down{
+      margin-top: 1.2rem;
+      font-size:.95rem;
+      opacity:.9;
       text-decoration:none;
+      padding: .6rem 1rem;
+      border-radius: 999px;
+      border: 1px solid var(--r24);
+      background: rgba(0,0,0,.55);
+    }
+
+    /* seccion pasos */
+    .section{
+      padding: 4rem 1.25rem 3rem;
+      border-top: 1px solid rgba(255,0,0,.18);
+      background: rgba(0,0,0,.85);
+    }
+    .section .wrap{ align-items:stretch }
+    .h2{
+      margin:0 0 1rem;
+      font-size: 1.7rem;
       text-transform: lowercase;
-      cursor:pointer;
-    }
-    .btn:hover{ filter: brightness(1.08); }
-
-    .btn-primary{
-      border-color: rgba(255,0,0,.35);
-      background: rgba(255,0,0,.10);
-      color: #ffb4b4;
+      text-shadow: 0 0 18px rgba(255,0,0,.18);
     }
 
-    /* layout */
-    .col-6{ grid-column: span 6; }
-    .col-7{ grid-column: span 7; }
-    .col-5{ grid-column: span 5; }
-    .col-12{ grid-column: span 12; }
+    .plain{
+      white-space: pre-wrap;
+      line-height: 1.55;
+      margin: 0;
+      padding: 1rem 1.1rem;
+      border-radius: 18px;
+      border: 1px solid var(--r24);
+      background: rgba(0,0,0,.70);
+      box-shadow: 0 0 0 1px rgba(255,0,0,.08) inset;
+    }
 
-    @media (max-width: 860px){
-      .brand{ left: 16px; }
-      .col-6,.col-7,.col-5{ grid-column: span 12; }
+    .out{
+      margin-top: 1rem;
+      padding: 1rem 1.1rem;
+      border-radius: 18px;
+      border: 1px solid var(--r24);
+      background: rgba(0,0,0,.70);
+      min-height: 3.4rem;
+      word-break: break-word;
+    }
+
+    footer{
+      padding: 2.5rem 1.25rem 3rem;
+      border-top: 1px solid rgba(255,0,0,.18);
+      background: rgba(0,0,0,.92);
+    }
+    .legal{
+      width:min(980px, 100%);
+      margin: 0 auto;
+      font-size: .78rem;
+      opacity:.85;
+      line-height: 1.55;
+      text-transform: lowercase;
+    }
+
+    .tiny-link{
+      opacity:.9;
+      text-decoration:none;
+      border-bottom: 1px dotted rgba(255,0,0,.35);
+    }
+
+    @media (max-width: 520px){
+      .btn{ min-width: 100% }
+      .meta{ flex-direction:column; align-items:flex-start }
+      .status{ justify-content:flex-start }
     }
   </style>
 </head>
 
 <body>
-  <div class="wrap" id="top">
-    <div class="brand">bauzagpt</div>
+  <main class="hero" id="inicio">
+    <div class="wrap">
+      <h1 class="brand">bauzagpt</h1>
+      <p class="sub">osint premium: tu input + nuestra automatización = reporte pdf listo para imprimir.</p>
 
-    <div class="top-actions">
-      <a class="pill" href="./osint.html">ir a panel</a>
-      <a class="pill" href="#como-usar">cómo usar</a>
-    </div>
-
-    <div class="card" role="region" aria-label="login">
-      <h1>bienvenido a bauzagpt</h1>
-      <p>inicia sesión para continuar</p>
-
-      <button class="btn-google" id="btn-google" type="button">
-        <span class="gmark">g</span>
-        sign in with google
-      </button>
-
-      <div class="divider">or</div>
-
-      <!-- opcional: lo dejamos visual, pero si no usas sms aún, no lo conectes -->
-      <div class="field">
-        <input id="phone-input" placeholder="phone number (e.g. +52...)" disabled />
-      </div>
-      <button class="btn-google" id="btn-sms" type="button" disabled>send code</button>
-
-      <div class="note" id="login-messages">secure sign-in by firebase</div>
-    </div>
-
-    <a class="scroll-down" href="#como-usar" aria-label="bajar">
-      <div class="chev">⌄</div>
-      ver guía y curso
-    </a>
-
-    <div class="eyes-bg" aria-hidden="true"></div>
-  </div>
-
-  <main class="below">
-    <div class="container">
-      <div class="grid" id="como-usar">
-        <section class="panel col-7">
-          <h2>menú de pasos (cómo usar la página)</h2>
-          <p>sin humo: así sacas resultados rápido y sin perderte.</p>
-
-          <div class="steps">
-            <div class="step"><b>1</b><div>inicia sesión con google (arriba). eso desbloquea el panel y premium.</div></div>
-            <div class="step"><b>2</b><div>entra a <a class="pill" href="./osint.html">osint.html</a> y escribe tu consulta (dork, correo, username, ip).</div></div>
-            <div class="step"><b>3</b><div>elige motor (google/shodan) y lanza búsqueda. si estás en “basic”, te limita; premium te abre más.</div></div>
-            <div class="step"><b>4</b><div>revisa resultados, afina el dork y repite. lo normal es 2–3 iteraciones.</div></div>
-            <div class="step"><b>5</b><div>cuando tengas “hit”, exporta evidencia (pdf) o guarda links para tu reporte.</div></div>
+      <div class="panel" role="region" aria-label="búsqueda premium">
+        <div class="row">
+          <div class="search">
+            <span class="icon" aria-hidden="true"></span>
+            <input id="q" type="text" inputmode="search" autocomplete="off"
+              placeholder="pega aquí tu objetivo, dork o contexto (ej: nombre + ciudad + empresa)"
+              aria-label="texto de búsqueda" />
           </div>
 
-          <div class="cta">
-            <a class="btn btn-primary" href="./pago.html">activar premium (20 mxn)</a>
-            <a class="btn" href="./osint.html">ir al panel ahora</a>
+          <button id="btn-premium" class="btn" type="button">
+            búsqueda premium · 20 mxn
+          </button>
+
+          <button id="btn-google" class="btn secondary" type="button">
+            acceso con google
+          </button>
+        </div>
+
+        <div class="meta">
+          <span class="pill">un solo plan. un solo flujo. cero drama.</span>
+          <div class="status">
+            <span class="pill" id="session-pill">sesión: no iniciada</span>
+            <a class="go-down" href="#pasos">ver pasos ↓</a>
           </div>
-        </section>
+        </div>
 
-        <section class="panel col-5" id="bauzashiel">
-          <h2>curso bauzashiel (mini)</h2>
-          <p>tu training express para operar como pro, sin volverte loco.</p>
-          <ul class="list">
-            <li><b>módulo 1:</b> dorks que sí pegan (operadores, pivoteo, filtros)</li>
-            <li><b>módulo 2:</b> shodan práctico (servicios, puertos, org, geo)</li>
-            <li><b>módulo 3:</b> verificación (capturas, timestamps, reproducibilidad)</li>
-            <li><b>módulo 4:</b> reporte premium (estructura, hallazgos, anexos)</li>
-          </ul>
+        <div class="divider" aria-hidden="true"></div>
+        <p class="hint">
+          tip ejecutivo: inicia sesión primero para que el backend pueda firmar el flujo de pago y generar el pdf sin “baches operativos”.
+        </p>
 
-          <div class="cta">
-            <a class="btn" href="#top">volver arriba</a>
-            <a class="btn btn-primary" href="./pago.html">premium 20 mxn</a>
-          </div>
-        </section>
-
-        <section class="panel col-12">
-          <h2>política de uso</h2>
-          <p>
-            esto es osint: fuentes públicas. úsalo legal y profesional. si el uso no es ético, te va a salir caro
-            (y no hablo de 20 mxn).
-          </p>
-        </section>
+        <div class="out" id="out" aria-live="polite"></div>
       </div>
     </div>
   </main>
 
-  <!-- tu login real (ya lo tienes) -->
-  <script type="module" src="./js/login.js"></script>
+  <section class="section" id="pasos">
+    <div class="wrap">
+      <h2 class="h2">pasos para usar la página</h2>
+      <pre class="plain">1) inicia sesión con google (registro automático).
+2) escribe tu objetivo / dork / contexto en el cuadro de búsqueda.
+3) presiona "búsqueda premium · 20 mxn".
+4) se abre el pago (20 mxn por búsqueda) y confirmas.
+5) el sistema corre la búsqueda + análisis y arma el reporte pdf.
+6) se entrega un link de descarga del pdf (y queda trazabilidad de tu orden).
 
-  <script>
-    // si ya hay token, cambia el mensaje para que se sienta "flujo pro"
-    const msg = document.getElementById("login-messages");
-    if (localStorage.getItem("bauza_token") && msg) {
-      msg.textContent = "sesión detectada. entra al panel osint.";
-    }
+nota: si tu input es basura, tu reporte saldrá “corporativamente optimista” pero no mágico. escribe bien, y el output sube de nivel.</pre>
+
+      <h2 class="h2" style="margin-top:1.25rem;">salida</h2>
+      <pre class="plain">- pdf con hallazgos, links, contexto y notas.
+- orden y control: cada búsqueda = 1 pago = 1 reporte.
+- enfoque osint: público y verificable (nada de hacks, nada de fantasías).</pre>
+    </div>
+  </section>
+
+  <footer>
+    <div class="legal">
+      <div style="margin-bottom:.65rem;">
+        <a class="tiny-link" href="#inicio">inicio</a> ·
+        <a class="tiny-link" href="#pasos">pasos</a>
+      </div>
+
+      <div>
+        aviso legal: bauzagpt entrega reportes informativos basados en fuentes públicas y/o insumos del usuario.
+        no es asesoría legal ni garantía de resultados. el usuario es responsable del uso del servicio y del cumplimiento
+        de leyes aplicables. precio: 20 mxn por búsqueda premium (monto final puede variar por comisiones del procesador
+        de pago o impuestos según aplique). al usar esta página aceptas términos, condiciones y política de privacidad.
+      </div>
+
+      <div style="margin-top:.8rem; opacity:.9;">
+        soporte: <span id="support" class="pill">contacto@tu-dominio.com</span>
+      </div>
+    </div>
+  </footer>
+
+  <noscript>
+    <div style="padding:1rem; border-top:1px solid rgba(255,0,0,.2); background:#000; color:#f00;">
+      esta página requiere javascript para iniciar sesión y procesar la búsqueda.
+    </div>
+  </noscript>
+
+  <script type="module">
+    // ========= configuración =========
+    // 1) firebase web config (no es “secreto”, pero sí debe ser el tuyo)
+    const firebaseConfig = {
+      apiKey: "pon-tu-api-key",
+      authDomain: "pon-tu-auth-domain",
+      projectId: "pon-tu-project-id",
+      appId: "pon-tu-app-id",
+    };
+
+    // 2) backend para pago + pdf (recomendación: cloud run / render / fly / tu vps)
+    // si tu backend vive en el mismo dominio vía cloudflare proxy, deja "/".
+    const API_BASE = "/"; // ejemplo: "https://api.bauzagpt.com" o "/"
+
+    // ========= ui helpers =========
+    const $ = (id) => document.getElementById(id);
+    const out = $("out");
+    const q = $("q");
+    const btnGoogle = $("btn-google");
+    const btnPremium = $("btn-premium");
+    const sessionPill = $("session-pill");
+
+    const say = (msg) => { out.textContent = msg; };
+    const fail = (msg) => { out.textContent = "error: " + msg; };
+
+    const setBusy = (busy) => {
+      btnPremium.disabled = busy;
+      btnGoogle.disabled = busy;
+      btnPremium.style.opacity = busy ? ".7" : "1";
+      btnGoogle.style.opacity = busy ? ".7" : "1";
+    };
+
+    // ========= firebase auth (modular) =========
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+    import {
+      getAuth,
+      GoogleAuthProvider,
+      signInWithPopup,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
+
+    let idToken = null;
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        idToken = null;
+        sessionPill.textContent = "sesión: no iniciada";
+        return;
+      }
+      idToken = await user.getIdToken();
+      const name = (user.displayName || "usuario").toLowerCase();
+      sessionPill.textContent = "sesión: " + name;
+    });
+
+    btnGoogle.addEventListener("click", async () => {
+      try{
+        setBusy(true);
+        say("abriendo google…");
+        const { user } = await signInWithPopup(auth, provider);
+        idToken = await user.getIdToken();
+        say("sesión iniciada. ya puedes correr la búsqueda premium.");
+      }catch(e){
+        fail(e?.message || "no se pudo iniciar sesión");
+      }finally{
+        setBusy(false);
+      }
+    });
+
+    // ========= flujo premium =========
+    // esperable del backend:
+    // POST /api/premium-search
+    // body: { query: string }
+    // headers: authorization: "bearer <firebase_id_token>"
+    // response: { pdf_url: "https://..." }  (o { checkout_url: "https://..." })
+    btnPremium.addEventListener("click", async () => {
+      const query = (q.value || "").trim();
+      if (!query) return fail("escribe algo en el cuadro de búsqueda.");
+
+      if (!idToken) {
+        return fail("inicia sesión con google primero (control de acceso).");
+      }
+
+      try{
+        setBusy(true);
+        say("ejecutando flujo premium… (pago → búsqueda → pdf)");
+
+        const res = await fetch(API_BASE.replace(/\/$/, "") + "/api/premium-search", {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+            "authorization": "bearer " + idToken
+          },
+          body: JSON.stringify({ query })
+        });
+
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          throw new Error(data?.error || ("http " + res.status));
+        }
+
+        // el backend puede regresarte:
+        // - checkout_url (si primero pagas)
+        // - pdf_url (si ya está listo)
+        if (data.checkout_url) {
+          say("abriendo pago…");
+          window.location.href = data.checkout_url;
+          return;
+        }
+
+        if (data.pdf_url) {
+          out.innerHTML = "pdf listo: " +
+            `<a href="${data.pdf_url}" class="tiny-link" target="_blank" rel="noopener">descargar reporte</a>`;
+          return;
+        }
+
+        say("ok: flujo ejecutado, pero el backend no regresó pdf_url / checkout_url. revisa tu endpoint.");
+      }catch(e){
+        fail(e?.message || "falló el flujo premium");
+      }finally{
+        setBusy(false);
+      }
+    });
+
+    // pequeño “easter” corporativo: enter = ejecutar
+    q.addEventListener("keydown", (ev) => {
+      if (ev.key === "Enter") btnPremium.click();
+    });
+
+    say("listo. inicia sesión y ejecuta tu primera búsqueda premium.");
   </script>
 </body>
 </html>
