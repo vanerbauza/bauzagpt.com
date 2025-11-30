@@ -6,345 +6,51 @@
   <meta name="theme-color" content="#000000" />
   <title>bauzagpt</title>
 
-  <style>
-    :root{
-      --r:#ff0000;
-      --b:#000000;
-      --r08:rgba(255,0,0,.08);
-      --r14:rgba(255,0,0,.14);
-      --r22:rgba(255,0,0,.22);
-      --r35:rgba(255,0,0,.35);
-      --r55:rgba(255,0,0,.55);
-      --r75:rgba(255,0,0,.75);
-    }
-
-    *{ box-sizing:border-box }
-    html,body{ height:100% }
-    body{
-      margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, "segoe ui", roboto, arial, sans-serif;
-      background:var(--b);
-      color:var(--r);
-      overflow-x:hidden;
-    }
-    a{ color:var(--r) }
-    ::selection{ background:var(--r); color:var(--b) }
-
-    /* glow rojo global (solo rojo + negro) */
-    body::before{
-      content:"";
-      position:fixed; inset:0;
-      pointer-events:none;
-      background:
-        radial-gradient(60rem 40rem at 50% 15%, var(--r22), transparent 62%),
-        radial-gradient(50rem 35rem at 15% 85%, var(--r08), transparent 60%),
-        radial-gradient(50rem 35rem at 85% 85%, var(--r08), transparent 60%);
-      z-index:-3;
-    }
-
-    .hero{
-      min-height:100vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding: 3rem 1.2rem 2.6rem;
-      position:relative;
-      isolation:isolate;
-      text-align:center;
-    }
-
-    /* portada como fondo (tu imagen real) */
-    .hero::before{
-      content:"";
-      position:absolute; inset:0;
-      background:
-        radial-gradient(60rem 40rem at 50% 20%, var(--r14), transparent 65%),
-        url("img/portada.png") center/cover no-repeat;
-      opacity:.22;          /* low opacity para que no "duplique" UI */
-      filter: blur(0.4px);
-      z-index:-2;
-    }
-
-    .hero::after{
-      content:"";
-      position:absolute; inset:0;
-      background: radial-gradient(60rem 40rem at 50% 10%, rgba(0,0,0,.15), rgba(0,0,0,.85));
-      z-index:-1;
-    }
-
-    /* accesibilidad */
-    .sr-only{
-      position:absolute;
-      width:1px;height:1px;
-      padding:0;margin:-1px;
-      overflow:hidden;clip:rect(0,0,0,0);
-      white-space:nowrap;border:0;
-    }
-
-    .wrap{
-      width:min(980px, 100%);
-      display:flex;
-      flex-direction:column;
-      gap: 1.1rem;
-      align-items:center;
-    }
-
-    .logo{
-      margin:0;
-      font-size: clamp(3.2rem, 9vw, 6.6rem);
-      text-transform: lowercase;
-      letter-spacing:.02em;
-      /* 3d: sombras negras + glow rojo */
-      text-shadow:
-        0 2px 0 #000,
-        0 4px 0 #000,
-        0 6px 0 #000,
-        0 0 14px var(--r35),
-        0 0 32px var(--r14);
-      filter: drop-shadow(0 18px 35px rgba(255,0,0,.16));
-    }
-
-    .panel{
-      width:min(880px, 100%);
-      padding: 1.2rem;
-      background: rgba(0,0,0,.78);
-      border: 1px solid var(--r35);
-      border-radius: 18px;
-      box-shadow:
-        0 0 0 1px rgba(255,0,0,.10) inset,
-        0 20px 70px rgba(255,0,0,.10);
-      backdrop-filter: blur(8px);
-      position:relative;
-    }
-
-    .row{
-      display:flex;
-      gap:.75rem;
-      align-items:stretch;
-      flex-wrap:wrap;
-      justify-content:center;
-    }
-
-    .search{
-      flex: 1 1 420px;
-      min-width: 260px;
-      position:relative;
-    }
-    .search input{
-      width:100%;
-      padding: 1rem 1.1rem 1rem 3.1rem;
-      border-radius: 999px;
-      border: 1px solid var(--r55);
-      outline:none;
-      background: rgba(0,0,0,.88);
-      color: var(--r);
-      font-size: 1rem;
-      box-shadow:
-        0 0 0 1px rgba(255,0,0,.10) inset,
-        0 12px 32px rgba(255,0,0,.10);
-    }
-    .search input::placeholder{ color: rgba(255,0,0,.55) }
-
-    .icon{
-      position:absolute;
-      left: 1.05rem;
-      top:50%;
-      transform: translateY(-50%);
-      width: 1.2rem; height: 1.2rem;
-      border: 2px solid var(--r55);
-      border-radius: 999px;
-    }
-    .icon::after{
-      content:"";
-      position:absolute;
-      width:.75rem; height: 2px;
-      background: var(--r55);
-      right: -0.68rem;
-      bottom: -0.16rem;
-      transform: rotate(45deg);
-      border-radius: 2px;
-    }
-
-    .btn{
-      cursor:pointer;
-      border-radius: 14px;
-      border: 1px solid var(--r75);
-      background: rgba(0,0,0,.86);
-      color: var(--r);
-      padding: .95rem 1.1rem;
-      font-weight: 900;
-      letter-spacing: .01em;
-      text-transform: lowercase;
-      box-shadow:
-        0 0 0 1px rgba(255,0,0,.12) inset,
-        0 16px 50px rgba(255,0,0,.14);
-      transition: transform .08s ease, background .18s ease, box-shadow .18s ease;
-      min-width: 240px;
-    }
-    .btn:hover{
-      background: rgba(255,0,0,.08);
-      box-shadow:
-        0 0 0 1px rgba(255,0,0,.22) inset,
-        0 22px 70px rgba(255,0,0,.18);
-    }
-    .btn:active{ transform: translateY(1px) }
-    .btn:disabled{ opacity:.65; cursor:not-allowed }
-
-    .meta{
-      margin-top:.9rem;
-      display:flex;
-      gap:.75rem 1rem;
-      align-items:center;
-      justify-content:space-between;
-      flex-wrap:wrap;
-      font-size:.92rem;
-      opacity:.92;
-    }
-    .pill{
-      border: 1px solid var(--r35);
-      border-radius: 999px;
-      padding: .35rem .7rem;
-      background: rgba(0,0,0,.62);
-    }
-    .go-down{
-      border: 1px solid var(--r35);
-      padding:.55rem .95rem;
-      border-radius:999px;
-      background: rgba(0,0,0,.55);
-      text-decoration:none;
-    }
-
-    .out{
-      margin-top: 1rem;
-      padding: 1rem 1.1rem;
-      border-radius: 18px;
-      border: 1px solid var(--r35);
-      background: rgba(0,0,0,.72);
-      min-height: 3.2rem;
-      word-break: break-word;
-      text-align:left;
-    }
-
-    /* ojos css (para vibe portada) */
-    .eyes{
-      position:absolute;
-      left:50%;
-      bottom:-2.1rem;
-      transform: translateX(-50%);
-      width:min(760px, 96%);
-      height: 6rem;
-      pointer-events:none;
-      opacity:.95;
-      filter: drop-shadow(0 0 18px rgba(255,0,0,.18));
-    }
-    .eye{
-      position:absolute;
-      top:1.05rem;
-      width: 42%;
-      height: 3.2rem;
-      border: 2px solid var(--r75);
-      border-top:none;
-      border-radius: 0 0 66px 66px;
-      background: rgba(255,0,0,.06);
-      box-shadow: 0 0 30px rgba(255,0,0,.14);
-    }
-    .eye.left{ left:0; transform: skewX(12deg) }
-    .eye.right{ right:0; transform: skewX(-12deg) }
-    .pupil{
-      position:absolute;
-      left:50%;
-      top: 58%;
-      transform: translate(-50%, -50%);
-      width: 34%;
-      height: 55%;
-      border: 2px solid var(--r75);
-      border-radius: 999px;
-      background: rgba(0,0,0,.60);
-    }
-
-    .section{
-      padding: 5rem 1.25rem 3rem;
-      border-top: 1px solid var(--r22);
-      background: rgba(0,0,0,.94);
-    }
-    .section .wrap{ align-items:stretch }
-    .h2{
-      margin:0 0 1rem;
-      font-size: 1.7rem;
-      text-transform: lowercase;
-      text-shadow: 0 0 18px rgba(255,0,0,.18);
-    }
-    .plain{
-      white-space: pre-wrap;
-      line-height: 1.55;
-      margin: 0;
-      padding: 1rem 1.1rem;
-      border-radius: 18px;
-      border: 1px solid var(--r35);
-      background: rgba(0,0,0,.78);
-      box-shadow: 0 0 0 1px rgba(255,0,0,.08) inset;
-    }
-
-    footer{
-      padding: 2.4rem 1.25rem 3rem;
-      border-top: 1px solid var(--r22);
-      background: rgba(0,0,0,.96);
-    }
-    .legal{
-      width:min(980px, 100%);
-      margin: 0 auto;
-      font-size: .78rem;
-      opacity:.86;
-      line-height: 1.55;
-      text-transform: lowercase;
-    }
-
-    @media (max-width: 520px){
-      .btn{ min-width:100% }
-      .meta{ flex-direction:column; align-items:flex-start }
-      .eyes{ bottom:-2.6rem; height: 6.6rem; }
-    }
-  </style>
+  <link rel="stylesheet" href="css/styles.css" />
 </head>
 
 <body>
-  <main class="hero" id="inicio">
-    <h1 class="sr-only">bauzagpt</h1>
+  <main class="hero-minimal" id="inicio">
+    <div class="hero-overlay" aria-hidden="true"></div>
 
-    <div class="wrap">
-      <div class="logo" aria-hidden="true">bauzagpt</div>
+    <section class="hero-center" aria-label="bauzagpt portada">
+      <h1 class="brand">bauzagpt</h1>
 
-      <div class="panel" aria-label="búsqueda premium">
-        <div class="row">
-          <div class="search">
-            <span class="icon" aria-hidden="true"></span>
-            <input id="q" type="text" inputmode="search" autocomplete="off"
-              placeholder="escribe tu objetivo / dork / contexto"
-              aria-label="texto de búsqueda" />
-          </div>
-
-          <button id="btn-premium" class="btn" type="button">
-            búsqueda premium · 20 mxn
-          </button>
-
-          <button id="btn-google" class="btn" type="button">
-            acceso con google
-          </button>
-        </div>
-
-        <div class="meta">
-          <span class="pill" id="session">sesión: no iniciada</span>
-          <a class="go-down" href="#pasos">ver pasos ↓</a>
-        </div>
-
-        <div class="out" id="out" aria-live="polite"></div>
-
-        <div class="eyes" aria-hidden="true">
-          <div class="eye left"><div class="pupil"></div></div>
-          <div class="eye right"><div class="pupil"></div></div>
-        </div>
+      <div class="search-box" aria-label="búsqueda premium">
+        <input id="q" type="text" inputmode="search" autocomplete="off"
+          placeholder="escribe tu objetivo / dork / contexto" />
+        <button id="btn-premium" type="button">búsqueda premium · 20 mxn</button>
       </div>
-    </div>
+
+      <button id="btn-google" class="btn-wide" type="button" style="
+        border:none; outline:none; cursor:pointer;
+        border-radius: 999px;
+        padding: .85rem 1.35rem;
+        background: rgba(0,0,0,.92);
+        border: 1px solid rgba(255,0,0,.75);
+        color: #ff0000;
+        font-weight: 900;
+        text-transform: lowercase;
+        box-shadow: 0 0 0 1px rgba(255,0,0,.12) inset, 0 16px 40px rgba(255,0,0,.14);
+      ">acceso con google</button>
+
+      <div class="meta-row">
+        <span class="pill" id="session">sesión: no iniciada</span>
+        <a class="go-down" href="#pasos">ver pasos ↓</a>
+      </div>
+
+      <div class="out" id="out" aria-live="polite"></div>
+
+      <!-- ojos -->
+      <div class="eyes" aria-hidden="true">
+        <div class="eye left"><div class="pupil"></div></div>
+        <div class="eye right"><div class="pupil"></div></div>
+      </div>
+
+      <div class="small-hint">
+        tip: primero inicia sesión, luego ejecuta premium. “governance” antes del caos.
+      </div>
+    </section>
   </main>
 
   <section class="section" id="pasos">
@@ -381,12 +87,11 @@ nota: esto es osint. magia no vendemos. claridad en input = calidad en output.</
     const fail = (m) => out.textContent = "error: " + m;
     const busy = (x) => { btnGoogle.disabled = x; btnPremium.disabled = x; };
 
-    // firebase auth (google)
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
     import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 
-    // ⚠️ pega aquí TU web config de firebase (solo pública). no pongas claves secretas.
- const firebaseConfig = {
+    // pega aquí tu config web de firebase (solo pública). no pongas claves secretas.
+    const firebaseConfig = {
   apiKey: "AIzaSyD3a7cv735RQPYsXMdn4KWQ-NDugL7WyfI",
   authDomain: "studio-6473341422-75630.firebaseapp.com",
   projectId: "studio-6473341422-75630",
@@ -410,8 +115,8 @@ nota: esto es osint. magia no vendemos. claridad en input = calidad en output.</
       }
       idToken = await user.getIdToken();
       localStorage.setItem("bauza_token", idToken);
-      localStorage.setItem("bauza_user", (user.email || user.uid || "usuario").toLowerCase());
       session.textContent = "sesión: " + ((user.displayName || "usuario").toLowerCase());
+      say("sesión iniciada. listo para premium.");
     });
 
     btnGoogle.addEventListener("click", async () => {
@@ -429,7 +134,6 @@ nota: esto es osint. magia no vendemos. claridad en input = calidad en output.</
       }
     });
 
-    // flujo premium: guarda query + manda a pago.html (si ya lo tienes)
     btnPremium.addEventListener("click", () => {
       const query = (q.value || "").trim();
       if (!query) return fail("escribe algo en el cuadro de búsqueda.");
@@ -437,8 +141,7 @@ nota: esto es osint. magia no vendemos. claridad en input = calidad en output.</
 
       localStorage.setItem("bauza_query", query);
 
-      // si ya tienes pago.html: úsalo.
-      // (si luego conectas stripe real, esta ruta se reemplaza por checkout)
+      // si ya tienes pago.html, lo mandamos ahí
       location.href = "pago.html?monto=20&q=" + encodeURIComponent(query);
     });
 
