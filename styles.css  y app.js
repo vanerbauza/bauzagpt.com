@@ -1,7 +1,8 @@
-/ (raíz de la carpeta publicada)
+/docs
+├── CNAME
 ├── index.html
 ├── styles.css
 ├── app.js
 └── assets/
-    ├── banner.jpg        (tu imagen de fondo, opcional)
-    └── logo.svg          (opcional; si no, usamos texto)
+    ├── banner.jpg    
+    └── logo.svg      
