@@ -31,3 +31,5 @@ load-config.js
 /*
 !/.gitignore
 !/docs/
+_local_backup/
+docs/reportes/

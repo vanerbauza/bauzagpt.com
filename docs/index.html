@@ -3,203 +3,205 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="theme-color" content="#000000" />
-  <title>bauzagpt</title>
+  <meta name="theme-color" content="#070a12" />
+  <title>bauzagpt · osint premium</title>
+  <meta name="description" content="osint premium: búsquedas guiadas, hallazgos y reporte listo para imprimir." />
+  <meta name="robots" content="index,follow" />
 
+  <link rel="icon" href="img/favicon.png" />
   <link rel="stylesheet" href="css/styles.css" />
 </head>
 
 <body>
-  <main class="hero-minimal" id="inicio">
-    <div class="hero-overlay" aria-hidden="true"></div>
+  <a class="skip" href="#main">saltar al contenido</a>
 
-    <section class="hero-center" aria-label="bauzagpt portada">
-      <h1 class="brand">bauzagpt</h1>
+  <header class="topbar">
+    <div class="wrap topbar-inner">
+      <a class="brand" href="#inicio" aria-label="ir al inicio">bauzagpt</a>
 
-      <div class="search-box" aria-label="búsqueda premium">
-        <input id="q" type="text" inputmode="search" autocomplete="off"
-          placeholder="escribe tu objetivo / dork / contexto" />
-        <button id="btn-premium" type="button">búsqueda premium · 20 mxn</button>
+      <nav class="nav" aria-label="navegación">
+        <a href="#como-funciona">cómo funciona</a>
+        <a href="#curso">curso</a>
+        <a href="#faq">faq</a>
+        <a href="#contacto">contacto</a>
+      </nav>
+
+      <div class="actions">
+        <button id="btn-login" class="btn ghost" type="button">iniciar sesión</button>
+        <button id="btn-logout" class="btn ghost hidden" type="button">salir</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- hero -->
+    <section id="inicio" class="hero">
+      <div class="wrap hero-grid">
+        <div class="hero-copy">
+          <p class="pill">osint premium · reporte listo para imprimir</p>
+          <h1>haz una búsqueda premium y convierte hallazgos en evidencia clara.</h1>
+          <p class="sub">
+            escribe tu objetivo, te guiamos por pasos, y terminas con un resumen ordenado para pdf.
+          </p>
+
+          <div class="searchbox" role="group" aria-label="búsqueda premium">
+            <label class="sr" for="q">objetivo</label>
+            <input id="q" type="text" inputmode="search" autocomplete="off"
+              placeholder="nombre, teléfono, usuario, url, contexto…" />
+            <button id="btn-premium" class="btn primary" type="button">
+              búsqueda premium · 20 mxn
+            </button>
+          </div>
+
+          <div class="mini">
+            <span id="status" class="status">listo.</span>
+            <a class="link" href="#como-funciona">ver el proceso ↓</a>
+          </div>
+        </div>
+
+        <div class="hero-card" aria-label="vista previa">
+          <div class="card">
+            <div class="card-h">
+              <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+              <span class="card-title">vista previa del reporte</span>
+            </div>
+            <div class="card-b">
+              <div class="kp">
+                <div class="k">objetivo</div>
+                <div class="v" id="preview-target">—</div>
+              </div>
+              <div class="kp">
+                <div class="k">salida</div>
+                <div class="v">resumen, links, capturas, cronología</div>
+              </div>
+              <div class="kp">
+                <div class="k">formato</div>
+                <div class="v">pdf / zip (evidencias)</div>
+              </div>
+              <div class="sep"></div>
+              <p class="muted">
+                tip: inicia sesión para guardar búsquedas y armar tu pdf con orden.
+              </p>
+
+              <button id="btn-studio" class="btn wide" type="button">
+                abrir panel (firebase studio)
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <button id="btn-google" class="btn-wide" type="button" style="
-        border:none; outline:none; cursor:pointer;
-        border-radius: 999px;
-        padding: .85rem 1.35rem;
-        background: rgba(0,0,0,.92);
-        border: 1px solid rgba(255,0,0,.75);
-        color: #ff0000;
-        font-weight: 900;
-        text-transform: lowercase;
-        box-shadow: 0 0 0 1px rgba(255,0,0,.12) inset, 0 16px 40px rgba(255,0,0,.14);
-      ">acceso con google</button>
+      <div class="hero-bg" aria-hidden="true"></div>
+    </section>
 
-      <div class="meta-row">
-        <span class="pill" id="session">sesión: no iniciada</span>
-        <a class="go-down" href="#pasos">ver pasos ↓</a>
+    <!-- cómo funciona -->
+    <section id="como-funciona" class="section">
+      <div class="wrap">
+        <h2>cómo funciona (sin humo)</h2>
+        <p class="lead">un flujo simple: objetivo → búsqueda → hallazgos → reporte.</p>
+
+        <div class="grid-3">
+          <article class="tile">
+            <h3>1) define objetivo</h3>
+            <p>pon contexto. mientras más claro, más preciso el resultado.</p>
+          </article>
+          <article class="tile">
+            <h3>2) ejecuta premium</h3>
+            <p>se dispara el flujo y se guarda el caso (si estás logueado).</p>
+          </article>
+          <article class="tile">
+            <h3>3) arma el pdf</h3>
+            <p>ordena evidencias por fecha y exporta listo para imprimir.</p>
+          </article>
+        </div>
       </div>
+    </section>
 
-      <div class="out" id="out" aria-live="polite"></div>
+    <!-- curso -->
+    <section id="curso" class="section alt">
+      <div class="wrap">
+        <div class="split">
+          <div>
+            <h2>curso: bauzashield</h2>
+            <p class="lead">tu manual operativo: osint responsable, trazabilidad y evidencia.</p>
+            <ul class="list">
+              <li>metodología: hipótesis → fuentes → verificación</li>
+              <li>checklist legal básico: qué sí y qué no</li>
+              <li>estructura de reporte: cronología + anexos</li>
+            </ul>
 
-      <!-- ojos -->
-      <div class="eyes" aria-hidden="true">
-        <div class="eye left"><div class="pupil"></div></div>
-        <div class="eye right"><div class="pupil"></div></div>
+            <button id="btn-curso" class="btn primary" type="button">ver curso</button>
+          </div>
+
+          <div class="panel">
+            <div class="panel-title">plantilla de reporte</div>
+            <div class="panel-body">
+              <div class="chip">carátula</div>
+              <div class="chip">resumen ejecutivo</div>
+              <div class="chip">línea de tiempo</div>
+              <div class="chip">evidencia (capturas / links)</div>
+              <div class="chip">anexos</div>
+            </div>
+            <p class="muted">objetivo: que tu pdf se vea serio, no como “capturas sueltas”.</p>
+          </div>
+        </div>
       </div>
+    </section>
 
-      <div class="small-hint">
-        tip: primero inicia sesión, luego ejecuta premium. “gobernanza” antes del caos.
+    <!-- faq -->
+    <section id="faq" class="section">
+      <div class="wrap">
+        <h2>faq</h2>
+        <details class="qa">
+          <summary>¿necesito elegir plan?</summary>
+          <p>no. un solo motor: búsqueda premium a 20 mxn. fácil de vender, fácil de operar.</p>
+        </details>
+        <details class="qa">
+          <summary>¿qué se guarda?</summary>
+          <p>si inicias sesión: objetivo, timestamp, y la estructura del caso (sin meter datos sensibles si tú no los subes).</p>
+        </details>
+        <details class="qa">
+          <summary>¿esto es legal?</summary>
+          <p>depende del uso. el flujo está pensado para osint responsable: fuentes abiertas y trazabilidad.</p>
+        </details>
+      </div>
+    </section>
+
+    <!-- contacto -->
+    <section id="contacto" class="section alt">
+      <div class="wrap">
+        <h2>contacto</h2>
+        <p class="lead">si quieres que esto se convierta en máquina de ingresos, lo armamos como producto.</p>
+
+        <div class="contact">
+          <a class="btn wide" href="mailto:contacto@bauzagpt.com">contacto@bauzagpt.com</a>
+          <button id="btn-copy" class="btn ghost wide" type="button">copiar link del sitio</button>
+        </div>
+
+        <footer class="footer">
+          <span>© <span id="y"></span> bauzagpt</span>
+          <span class="muted">hecho para ejecutar, no para decorar.</span>
+        </footer>
       </div>
     </section>
   </main>
 
-  <section class="section" id="pasos">
-    <div class="wrap">
-      <h2 class="h2">pasos para usar la página</h2>
-      <pre class="plain">1) inicia sesión con google (registro automático).
-2) escribe tu objetivo / dork / contexto en el cuadro de búsqueda.
-3) presiona "búsqueda premium · 20 mxn".
-4) pagas con stripe y confirmas (20 mxn).
-5) al volver, se habilita tu token / flujo premium.
-6) recibes el pdf (link) cuando el sistema lo libere.</pre>
+  <!-- modal login -->
+  <dialog id="dlg" class="dlg">
+    <div class="dlg-card">
+      <div class="dlg-h">
+        <strong>iniciar sesión</strong>
+        <button id="btn-close" class="x" type="button" aria-label="cerrar">✕</button>
+      </div>
+      <p class="muted">usa google para guardar búsquedas y construir tu pdf.</p>
+      <button id="btn-google" class="btn primary wide" type="button">continuar con google</button>
+      <p class="fine muted">si estás en modo incógnito, puede fallar el popup.</p>
     </div>
-  </section>
+  </dialog>
 
-  <footer>
-    <div class="legal">
-      aviso legal: bauzagpt ofrece resultados informativos basados en fuentes públicas y/o insumos del usuario.
-      no es asesoría legal ni garantía de resultados. el usuario es responsable del uso y del cumplimiento de leyes aplicables.
-      precio: 20 mxn por búsqueda/token. al usar este sitio aceptas términos, condiciones y política de privacidad.
-    </div>
-  </footer>
-
-  <script type="module">
-    const out = document.getElementById("out");
-    const q = document.getElementById("q");
-    const btnGoogle = document.getElementById("btn-google");
-    const btnPremium = document.getElementById("btn-premium");
-    const session = document.getElementById("session");
-
-    const say = (m) => out.textContent = m;
-    const fail = (m) => out.textContent = "error: " + m;
-    const busy = (x) => { btnGoogle.disabled = x; btnPremium.disabled = x; };
-
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-    import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-
-    // firebase web config (pública)
-    const firebaseConfig = {
-      apiKey: "AIzaSyD3a7cv735RQPYsXMdn4KWQ-NDugL7WyfI",
-      authDomain: "studio-6473341422-75630.firebaseapp.com",
-      projectId: "studio-6473341422-75630",
-      storageBucket: "studio-6473341422-75630.firebasestorage.app",
-      messagingSenderId: "240684953453",
-      appId: "1:240684953453:web:6027f3b025c9ee22e8b464"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const provider = new GoogleAuthProvider();
-
-    let idToken = null;
-    let uid = null;
-
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        idToken = null;
-        uid = null;
-        session.textContent = "sesión: no iniciada";
-        localStorage.removeItem("bauza_token");
-        localStorage.removeItem("bauza_uid");
-        return;
-      }
-      uid = user.uid;
-      idToken = await user.getIdToken();
-      localStorage.setItem("bauza_token", idToken);
-      localStorage.setItem("bauza_uid", uid);
-      session.textContent = "sesión: " + ((user.displayName || "usuario").toLowerCase());
-      say("sesión iniciada. listo para premium.");
-    });
-
-    btnGoogle.addEventListener("click", async () => {
-      try{
-        busy(true);
-        say("abriendo google…");
-        const { user } = await signInWithPopup(auth, provider);
-        uid = user.uid;
-        idToken = await user.getIdToken();
-        localStorage.setItem("bauza_token", idToken);
-        localStorage.setItem("bauza_uid", uid);
-        say("sesión iniciada. ahora sí: búsqueda premium.");
-      }catch(e){
-        fail(e?.message || "no se pudo iniciar sesión");
-      }finally{
-        busy(false);
-      }
-    });
-
-    // ===== stripe (frontend) =====
-    // IMPORTANTE:
-    // - aquí NO van secretos de stripe
-    // - esto llama a TU backend (firebase functions) que crea el checkout
-    //
-    // si publicas Firebase Functions con nombre "api", la URL suele ser:
-    // https://us-central1-studio-6473341422-75630.cloudfunctions.net/api
-    const API_BASE = "https://us-central1-studio-6473341422-75630.cloudfunctions.net/api";
-
-    async function abrirCheckoutStripe(query) {
-      if (!idToken) throw new Error("primero: acceso con google.");
-
-      // guardamos el query para usarlo después del pago (success.html o vuelta al home)
-      localStorage.setItem("bauza_query", query);
-
-      // OJO: según como montes tu Express en Functions, puede ser:
-      //   API_BASE + "/api/buy-token"  (si tus rutas empiezan con /api/...)
-      // o
-      //   API_BASE + "/buy-token"      (si tus rutas empiezan directo)
-      //
-      // aquí asumimos /api/buy-token:
-      const endpoint = API_BASE + "/api/buy-token";
-
-      const res = await fetch(endpoint, {
-        method: "POST",
-        headers: {
-          "content-type": "application/json",
-          "authorization": "bearer " + idToken
-        },
-        body: JSON.stringify({ query })
-      });
-
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data?.error || ("checkout error http " + res.status));
-
-      localStorage.setItem("bauza_order_id", data.order_id || "");
-      if (!data.checkout_url) throw new Error("backend no devolvió checkout_url");
-
-      window.location.href = data.checkout_url;
-    }
-
-    btnPremium.addEventListener("click", async () => {
-      const query = (q.value || "").trim();
-      if (!query) return fail("escribe algo en el cuadro de búsqueda.");
-      if (!idToken) return fail("primero: acceso con google.");
-
-      try{
-        busy(true);
-        say("abriendo pago stripe…");
-        await abrirCheckoutStripe(query);
-      }catch(e){
-        fail(e?.message || "falló abrir pago");
-      }finally{
-        busy(false);
-      }
-    });
-
-    q.addEventListener("keydown", (ev) => {
-      if (ev.key === "Enter") btnPremium.click();
-    });
-
-    say("listo. inicia sesión y ejecuta tu búsqueda premium.");
-  </script>
+  <script type="module" src="js/firebase-init.js"></script>
+  <script type="module" src="js/login.js"></script>
+  <script type="module" src="js/app.js"></script>
 </body>
 </html>
+
