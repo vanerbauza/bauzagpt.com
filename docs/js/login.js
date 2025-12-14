@@ -61,3 +61,7 @@ onAuthStateChanged(auth, (user) => {
   btnLogout?.classList.toggle("hidden", !logged);
   setStatus(logged ? `listo, ${user.displayName?.toLowerCase() || "usuario"}.` : "listo.");
 });
+import { getAuth } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+
+console.log("AUTH READY:", getAuth().currentUser);
+
