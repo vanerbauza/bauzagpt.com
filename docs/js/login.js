@@ -33,7 +33,6 @@ btnGoogle?.addEventListener("click", async () => {
   }
 });
 
-// 👉 Maneja el resultado al volver del redirect
 getRedirectResult(auth)
   .then((result) => {
     if (result?.user) {
