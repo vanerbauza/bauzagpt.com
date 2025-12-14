@@ -1,5 +1,3 @@
-// docs/js/login.js — FIX definitivo OAuth Google
-
 import { auth } from "./firebase-init.js";
 import {
   GoogleAuthProvider,
