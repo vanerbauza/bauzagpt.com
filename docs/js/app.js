@@ -1,11 +1,26 @@
-cd C:\Users\ivanbauza\bauzagpt.com
+// app.js — LIMPIO, SIN ERRORES
+document.addEventListener("DOMContentLoaded", () => {
+  const q = document.getElementById("q");
+  const btnPremium = document.getElementById("btn-premium");
+  const status = document.getElementById("status");
 
-# 5) marca conflictos como resueltos
-git add docs\index.html docs\css\styles.css docs\js\firebase-init.js docs\js\login.js docs\js\app.js
+  if (!btnPremium) return;
 
-# 6) este es el path conflictivo viejo: lo removemos del índice si sigue apareciendo
-git rm -f --ignore-unmatch "docs/js/app.js/app.js"
+  async function runPremiumSearch() {
+    const query = (q?.value || "").trim();
+    if (!query) {
+      if (status) status.textContent = "pon un objetivo primero.";
+      return;
+    }
+    if (status) status.textContent = "buscando…";
+    console.log("Premium search placeholder:", query);
+  }
 
-git status
-git commit -m "resolve conflicts + boton premium stripe"
-git push
+  btnPremium.addEventListener("click", runPremiumSearch);
+
+  if (q) {
+    q.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") runPremiumSearch();
+    });
+  }
+});
