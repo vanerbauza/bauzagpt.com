@@ -1,8 +1,10 @@
-// docs/js/login.js
+// docs/js/login.js — FIX definitivo OAuth Google
+
 import { auth } from "./firebase-init.js";
 import {
   GoogleAuthProvider,
-  signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   onAuthStateChanged,
   signOut
 } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
@@ -16,29 +18,41 @@ const btnGoogle = $("btn-google");
 const btnClose = $("btn-close");
 const status = $("status");
 
-function setStatus(msg){ if(status) status.textContent = msg; }
+function setStatus(msg){ if (status) status.textContent = msg; }
 
 btnLogin?.addEventListener("click", () => dlg?.showModal());
 btnClose?.addEventListener("click", () => dlg?.close());
 
 btnGoogle?.addEventListener("click", async () => {
-  try{
-    setStatus("abriendo login…");
+  try {
+    setStatus("redirigiendo a Google…");
     const provider = new GoogleAuthProvider();
-    await signInWithPopup(auth, provider);
-    dlg?.close();
-    setStatus("sesión iniciada.");
-  }catch(e){
+    provider.setCustomParameters({ prompt: "select_account" });
+    await signInWithRedirect(auth, provider);
+  } catch (e) {
     console.error(e);
-    setStatus("falló el login (revisa popup / cookies).");
+    setStatus("no se pudo iniciar sesión.");
   }
 });
 
+// 👉 Maneja el resultado al volver del redirect
+getRedirectResult(auth)
+  .then((result) => {
+    if (result?.user) {
+      dlg?.close();
+      setStatus("sesión iniciada.");
+    }
+  })
+  .catch((e) => {
+    console.error(e);
+    setStatus("falló el login.");
+  });
+
 btnLogout?.addEventListener("click", async () => {
-  try{
+  try {
     await signOut(auth);
     setStatus("sesión cerrada.");
-  }catch(e){
+  } catch (e) {
     console.error(e);
     setStatus("no se pudo cerrar sesión.");
   }
