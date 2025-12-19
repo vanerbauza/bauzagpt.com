@@ -9,27 +9,19 @@ npm-debug.log*
 package-lock.json
 pnpm-lock.yaml
 
+# secrets / configs
+.env
+.env.*
+
 # backups / clones / dumps
 WWW-Shodan-API/
 _backup*/
 _backup_submodule_bauzagpt.com/
 site_backup/
-bauzagpt.com/
 bauza-backend/
 bauzagpt-frontend/
 hacker/
-
-# stuff suelto que no debe ir a pages
-scripts/
-js/app.js/
-login.js/
-osint.js/
-config.json
-load-config.js
-
-# keep repo lean: track only /docs
-/*
-!/.gitignore
-!/docs/
 _local_backup/
+
+# reports / generated
 docs/reportes/
