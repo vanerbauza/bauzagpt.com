@@ -1,14 +1,14 @@
-// docs/js/firebase-init.js
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
 import { getAuth } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 
-// pega tu config real aquí
 const firebaseConfig = {
-  apiKey: "pon_aqui",
-  authDomain: "pon_aqui",
-  projectId: "pon_aqui",
-  appId: "pon_aqui",
+  apiKey: "AIzaSyD3a7cv735RQPYsXMdn4KWQ-NDugL7WyfI",
+  authDomain: "studio-6473341422-75630.firebaseapp.com",
+  projectId: "studio-6473341422-75630",
+  storageBucket: "studio-6473341422-75630.firebasestorage.app",
+  messagingSenderId: "240684953453",
+  appId: "1:240684953453:web:6027f3b025c9ee22e8b464"
 };
-
 export const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
