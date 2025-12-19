@@ -1,3 +1,0 @@
-user-agent: *
-allow: /
-sitemap: https://bauzagpt.com/sitemap.xml
