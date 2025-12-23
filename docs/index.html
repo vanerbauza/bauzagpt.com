@@ -2,360 +2,107 @@
 <html lang="es">
 <head>
   <meta charset="utf-8">
-  <title>BauzaGPT</title>
+  <title>BAUZA GPT — OSINT</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-</head>
-<body>
-  <!doctype html>
-<html lang="es" dir="ltr">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>BAUZA GPT — OSINT Premium</title>
-  <meta name="description" content="Búsqueda OSINT con acceso Google, créditos y entrega en PDF/ZIP.">
-  <link rel="preconnect" href="https://accounts.google.com">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+
   <style>
-    :root{
-      --bg:#000; --text:#e5e7eb; --muted:#a3a3a3; --glass:rgba(17,24,39,.6);
-      --ring:#22d3ee; --btn:#111827; --btnH:#1f2937; --ok:#34d399; --warn:#f59e0b; --err:#f87171;
-      --accent:#22d3ee; /* cian estilo Matrix */
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%}
     body{
-      margin:0; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto; color:var(--text); background:var(--bg);
-      overflow-x:hidden;
+      margin:0;
+      font-family:system-ui, Arial;
+      background:#000;
+      color:#e5e7eb;
     }
-    /* Fondo: ojos vigilantes */
-    .eyes-bg{position:fixed; inset:0; z-index:-2; background:#000 center/cover no-repeat}
-    .eyes-bg::before{content:""; position:absolute; inset:0; background:radial-gradient(1200px 600px at 50% -10%, rgba(34,211,238,.15), transparent 60%)}
-    .eyes-gif{position:fixed; inset:0; z-index:-3; object-fit:cover; width:100%; height:100%; filter:contrast(1.05) brightness(.38)}
-
-    
-    .noise{position:fixed; inset:0; pointer-events:none; z-index:-1; opacity:.25; mix-blend:screen;
-      background-image: repeating-linear-gradient(0deg, rgba(34,211,238,.03) 0 1px, transparent 1px 2px);
-      mask-image: radial-gradient(60% 30% at 50% 0%, #000 0%, transparent 70%);
+    .wrap{
+      max-width:800px;
+      margin:60px auto;
+      padding:20px;
+      text-align:center;
     }
-    .wrap{max-width:1080px; margin:0 auto; padding:28px 20px 80px}
-    header{display:flex; align-items:center; justify-content:space-between; gap:16px}
-    .brand{display:flex; align-items:center; gap:12px}
-    .logo{width:42px; height:42px; border-radius:12px; background:linear-gradient(135deg, #0ea5e9, #22d3ee); box-shadow:0 0 40px rgba(34,211,238,.25)}
-    .title{font-weight:800; letter-spacing:.5px}
-    .badge{font-size:12px; color:#67e8f9; background:rgba(34,211,238,.15); border:1px solid rgba(34,211,238,.3); padding:6px 10px; border-radius:999px}
-
-    
-    .hero{display:grid; gap:22px; margin-top:52px}
-    .h1{font-size:clamp(28px,6vw,46px); line-height:1.05; font-weight:800; text-shadow:0 0 18px rgba(34,211,238,.25)}
-    .sub{color:var(--muted); max-width:62ch}
-
-    .card{backdrop-filter: blur(10px); background:var(--glass); border:1px solid rgba(34,211,238,.15);
-      border-radius:20px; padding:18px; box-shadow:0 10px 40px rgba(0,0,0,.45)}
-
-    .search{display:flex; gap:10px; flex-wrap:wrap}
-    .input{flex:1 1 280px; background:#0b1220; color:var(--text); border:1px solid rgba(34,211,238,.22);
-      border-radius:14px; padding:14px 14px; outline:none; font-size:16px}
-    .input::placeholder{color:#7dd3fc99}
-
-    .btn{appearance:none; border:1px solid rgba(34,211,238,.35); color:#a7f3d0; font-weight:700; letter-spacing:.3px;
-      background:linear-gradient(180deg, #0b1220, #0a0f1d); border-radius:14px; padding:14px 16px; cursor:pointer;
-      transition:transform .06s ease, box-shadow .2s ease, border-color .2s ease}
-    .btn:hover{transform:translateY(-1px); border-color:rgba(34,211,238,.55); box-shadow:0 8px 25px rgba(34,211,238,.15)}
-    .btn:active{transform:translateY(0)}
-
-    .plans{display:flex; gap:12px; flex-wrap:wrap}
-    .plan{flex:1 1 240px; min-width:240px}
-    .plan .hdr{display:flex; align-items:center; justify-content:space-between}
-    .price{font-weight:800; font-size:20px}
-    .ok{color:var(--ok)} .warn{color:var(--warn)} .err{color:var(--err)}
-
-    /* Paso a paso */
-    .steps{display:grid; grid-template-columns:repeat(auto-fit, minmax(260px,1fr)); gap:16px; margin-top:40px}
-    .step{padding:18px; border-radius:18px; border:1px solid rgba(34,211,238,.15); background:rgba(2,6,23,.55)}
-    .step b{color:#7dd3fc}
-    .step img{display:block; width:100%; height:160px; object-fit:cover; border-radius:12px; margin:10px 0 0}
-
-    /* Modales */
-    .modal{position:fixed; inset:0; display:none; place-items:center; background:rgba(0,0,0,.6); z-index:30}
-    .modal.open{display:grid}
-    .modal .box{width:min(560px,92vw); background:#0b1220; border:1px solid rgba(34,211,238,.25);
-      border-radius:18px; padding:18px}
-
-    .row{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
-    .small{font-size:12px; color:#9ca3af}
-    .muted{color:#9ca3af}
-    .pill{display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border-radius:999px; border:1px solid rgba(34,211,238,.35); color:#67e8f9}
-    .link{color:#67e8f9; text-decoration:underline dotted}
-
-    footer{margin-top:42px; opacity:.9}
-    footer .grid{display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between}
+    .btn{
+      padding:14px 20px;
+      border-radius:12px;
+      border:1px solid #22d3ee;
+      background:#020617;
+      color:#67e8f9;
+      font-size:16px;
+      cursor:pointer;
+    }
+    .modal{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.8);
+      display:none;
+      place-items:center;
+    }
+    .modal.open{ display:grid; }
+    .box{
+      background:#020617;
+      padding:24px;
+      border-radius:16px;
+      border:1px solid #22d3ee;
+      width:90%;
+      max-width:420px;
+    }
+    .progress{
+      height:10px;
+      background:#111;
+      border-radius:999px;
+      overflow:hidden;
+      margin-top:16px;
+    }
+    .bar{
+      height:100%;
+      width:0%;
+      background:#22d3ee;
+      transition:width .4s;
+    }
   </style>
 </head>
+
 <body>
-  <!-- Fondo -->
-  <div class="eyes-bg"></div>
-  <div class="noise"></div>
 
   <div class="wrap">
-    <header>
-      <div class="brand">
-        <div class="logo"></div>
-        <div>
-          <div class="title">BAUZA GPT</div>
-          <div class="small">OSINT Premium con entrega en PDF</div>
-        </div>
-      </div>
-      <div class="row">
-        <span id="creditsPill" class="pill" title="Créditos disponibles" style="display:none">Créditos: <b id="creditsNum">0</b></span>
-        <button id="loginBtn" class="btn">Iniciar sesión</button>
-        <button id="logoutBtn" class="btn" style="display:none">Salir</button>
-      </div>
-    </header>
+    <h1>BAUZA GPT</h1>
+    <p>Análisis OSINT con información pública</p>
 
-    <section class="hero">
-      <h1 class="h1">Investiga, confirma y descarga tu reporte <span style="color:#67e8f9">en PDF</span>.</h1>
-      <p class="sub">Escribe el <b>target</b> (nombre, usuario, correo, teléfono o URL). Accede con Google, compra un paquete de créditos y recibe tus resultados en PDF/ZIP con enlaces verificados.</p>
-
-      <div class="card">
-        <div class="search">
-          <input id="target" class="input" placeholder="Ej: juan.perez + Guadalajara | @usuario | 33xxxxxxxx | correo@dominio.com" autocomplete="off"/>
-          <button id="searchBtn" class="btn">Búsqueda Premium</button>
-        </div>
-        <div id="searchNote" class="small" style="margin-top:8px; color:#9ca3af">La búsqueda consume <b>1 crédito</b>. Si no tienes, primero compra un paquete.</div>
-      </div>
-
-  
-        <div class="card plan">
-
-        </div>
-        <div class="card plan">
-          <div class="hdr"><div><b>Plan Pro</b></div><div class="price">$20 MXN</div></div>
-          <div class="small muted">2 búsquedas • Reporte PDF + ZIP</div>
-          <button data-plan="pro" class="btn" style="margin-top:10px">Comprar 2 créditos</button>
-        </div>
-      </div>
-
-      <div class="steps">
-        <div class="step"><b>1) Inicia con Google</b><div class="small">Acceso seguro + panel.</div><img src="./img/step1.png" alt="Paso 1"></div>
-        <div class="step"><b>2) Compra créditos</b><div class="small">Validación manual inmediata.</div><img src="./img/step2.png" alt="Paso 2"></div>
-        <div class="step"><b>3) Descarga tu PDF</b><div class="small">Enlaces verificados,.</div><img src="./img/step3.png" alt="Paso 3"></div>
-      </div>
-    </section>
-
-    <footer>
-      <div class="grid small">
-        <div>© <span id="y"></span> BAUZA GPT</div>
-        <div class="row small">
-          <a class="link" href="./privacidad.html">Privacidad</a>
-          <a class="link" href="./terminos.html">Términos</a>
-          <a class="link" href="./gracias.html">Gracias</a>
-        </div>
-      </div>
-    </footer>
+    <button class="btn" id="startBtn">Iniciar análisis</button>
   </div>
 
-  <!-- Modal: Login / Google -->
-  <div id="loginModal" class="modal" aria-hidden="true" role="dialog">
+  <div class="modal" id="jobModal">
     <div class="box">
-      <div class="row" style="justify-content:space-between">
-        <b>Accede con Google</b>
-        <button class="btn" onclick="closeModal('loginModal')">Cerrar</button>
+      <h3>Analizando…</h3>
+      <p id="status">Inicializando</p>
+
+      <div class="progress">
+        <div class="bar" id="bar"></div>
       </div>
-      <div class="small" style="margin:8px 0 14px">Necesario para registrar tu cuenta y tus créditos.</div>
-      <div id="googleSignInContainer" style="display:grid; place-items:center; min-height:70px">
-        <div id="googleBtn"></div>
-      </div>
+
+      <p style="font-size:12px;opacity:.7;margin-top:12px">
+        El proceso continuará aunque cierres la página
+      </p>
     </div>
   </div>
-
-  <!-- Modal: Pago / Orden -->
-  <div id="payModal" class="modal" aria-hidden="true" role="dialog">
-    <div class="box">
-      <div class="row" style="justify-content:space-between">
-        <b>Pedido creado</b>
-        <button class="btn" onclick="closeModal('payModal')">Cerrar</button>
-      </div>
-      <div id="payInfo" class="small" style="margin-top:8px"></div>
-      <div class="small muted" style="margin-top:10px">⚠️ Los <b>métodos de pago</b> no se muestran aquí. Se revelan dinámicamente tras crear el pedido (panel/admin). Revisa tu correo o tu panel.</div>
-      <div class="row" style="margin-top:12px">
-        <input id="orderToken" class="input" placeholder="Ingresa tu ID/Token de pedido para re-verificar" style="flex:1 1 auto"/>
-        <button class="btn" onclick="verifyOrder()">Verificar</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal: Progreso de reporte -->
-  <div id="jobModal" class="modal" aria-hidden="true" role="dialog">
-    <div class="box">
-      <div class="row" style="justify-content:space-between">
-        <b>Generando tu reporte…</b>
-        <button class="btn" onclick="closeModal('jobModal')">Cerrar</button>
-      </div>
-      <div id="jobStatus" class="small" style="margin-top:8px">Preparando…</div>
-      <div id="jobActions" style="margin-top:12px"></div>
-    </div>
-  </div>
-
-  <!-- Google Identity Services -->
-  <script src="https://accounts.google.com/gsi/client" async defer onload="window.__gsiLoaded=true; setupGoogle()"></script>
 
   <script>
-    // ===== CONFIG =====
-    const BACKEND = (location.hostname.includes('localhost')||location.hostname.includes('127.0.0.1'))
-      ? 'http://localhost:3000' : 'https://api.bauzagpt.com'; // <-- AJUSTA TU URL
-    const GOOGLE_CLIENT_ID = 'TU_GOOGLE_CLIENT_ID.apps.googleusercontent.com'; // <-- REEMPLAZA
+    const modal = document.getElementById("jobModal");
+    const bar   = document.getElementById("bar");
+    const status= document.getElementById("status");
 
-    // ===== UTILS =====
-    const qs = sel => document.querySelector(sel);
-    const $y = qs('#y'); $y.textContent = new Date().getFullYear();
+    document.getElementById("startBtn").onclick = ()=>{
+      modal.classList.add("open");
 
-    function openModal(id){const m=qs('#'+id); m?.classList.add('open'); m?.setAttribute('aria-hidden','false')}
-    function closeModal(id){const m=qs('#'+id); m?.classList.remove('open'); m?.setAttribute('aria-hidden','true')}
-
-    function save(k,v){localStorage.setItem(k, typeof v==='string'?v:JSON.stringify(v))}
-    function load(k, d=null){try{const v=localStorage.getItem(k); return v?JSON.parse(v):d}catch{return localStorage.getItem(k)||d}}
-    function token(){return load('bauza_token', null)}
-    function setCredits(n){save('credits', n); renderCredits()}
-    function renderCredits(){const c=Number(load('credits',0)); const pill=qs('#creditsPill'); qs('#creditsNum').textContent=c; pill.style.display=c>0?'inline-flex':'none'}
-
-    function toast(txt, type='info'){
-      console.log(`[${type}]`, txt);
-    }
-
-    // ===== AUTH (Google) =====
-    function setupGoogle(){
-      if(!window.google || !google.accounts || !google.accounts.id){
-        // reintento suave si aún no carga la librería
-        setTimeout(setupGoogle, 300);
-        return;
-      }
-      try{
-        google.accounts.id.initialize({
-          client_id: GOOGLE_CLIENT_ID,
-          callback: handleGsiCredential,
-          auto_select: false,
-        });
-        google.accounts.id.renderButton(document.getElementById('googleBtn'), { theme: 'outline', size: 'large', logo_alignment:'left' });
-      }catch(e){ console.error('GSI init error', e); }
-    }
-
-    async function handleGsiCredential(resp){
-      try{
-        const r = await fetch(`${BACKEND}/auth/google`,{
-          method:'POST', headers:{'Content-Type':'application/json'},
-          body: JSON.stringify({ credential: resp.credential })
-        });
-        if(!r.ok){ throw new Error('Auth fallida'); }
-        const data = await r.json();
-        // Espera: { token, credits, user:{name,email} }
-        save('bauza_token', data.token);
-        setCredits(data.credits||0);
-        qs('#loginBtn').style.display='none';
-        qs('#logoutBtn').style.display='inline-flex';
-        toast('Sesión iniciada ✔', 'ok');
-        closeModal('loginModal');
-      }catch(err){
-        toast('No se pudo iniciar sesión. Reintenta.', 'err');
-        console.error(err);
-      }
-    }
-
-    function ensureAuth(){
-      if(!token()){
-        openModal('loginModal'); return false;
-      }
-      return true;
-    }
-
-    // ===== ORDEN / PAGOS =====
-    async function createOrder(plan){
-      if(!ensureAuth()) return;
-      try{
-        const r = await fetch(`${BACKEND}/orders/new`,{
-          method:'POST', headers:{'Content-Type':'application/json','Authorization':`Bearer ${token()}`},
-          body: JSON.stringify({ plan })
-        });
-        if(!r.ok) throw new Error('No se pudo crear el pedido');
-        const data = await r.json();
-        // Espera: { order_id, amount, credits_added, status:'pending' }
-        qs('#payInfo').innerHTML = `ID: <b>${data.order_id}</b> · Monto: <b>$${data.amount} MXN</b> · Estado: <b>${data.status}</b><br/>Revisa tu correo/panel para instrucciones de pago.`;
-        openModal('payModal');
-      }catch(e){ toast('Error creando pedido', 'err'); console.error(e); }
-    }
-
-    async function verifyOrder(){
-      const oid = qs('#orderToken').value.trim(); if(!oid) return;
-      try{
-        const r = await fetch(`${BACKEND}/orders/${encodeURIComponent(oid)}/status`,{ headers:{'Authorization':`Bearer ${token()}`}});
-        if(!r.ok) throw new Error('Pedido no encontrado');
-        const data = await r.json();
-        if(data.status==='paid'){
-          setCredits(Number(load('credits',0)) + (data.credits_added||0));
-          toast('Pago confirmado. Créditos actualizados.', 'ok');
-          closeModal('payModal');
-        }else{
-          toast('Aún pendiente. Intenta más tarde.', 'warn');
+      let p = 0;
+      const iv = setInterval(()=>{
+        p += Math.random()*8;
+        if(p >= 100){
+          p = 100;
+          clearInterval(iv);
+          status.textContent = "Proceso finalizado";
         }
-      }catch(e){ toast('Error al verificar', 'err'); console.error(e); }
-    }
-
-    // ===== BÚSQUEDA / REPORTE =====
-    async function startSearch(){
-      if(!ensureAuth()) return;
-      const t = qs('#target').value.trim();
-      if(!t){ toast('Escribe un target', 'warn'); return; }
-      const credits = Number(load('credits',0));
-      if(credits<=0){ toast('No tienes créditos. Compra primero.', 'warn'); return; }
-      try{
-        const r = await fetch(`${BACKEND}/search/start`,{
-          method:'POST', headers:{'Content-Type':'application/json','Authorization':`Bearer ${token()}`},
-          body: JSON.stringify({ target: t })
-        });
-        if(!r.ok) throw new Error('No se pudo iniciar la búsqueda');
-        const data = await r.json(); // { job_id }
-        openModal('jobModal');
-        pollJob(data.job_id);
-        // descuenta 1 local (el backend validará real)
-        setCredits(Math.max(0, credits-1));
-      }catch(e){ toast('Error al iniciar búsqueda', 'err'); console.error(e); }
-    }
-
-    async function pollJob(job_id){
-      qs('#jobStatus').textContent = 'Recolectando evidencias…';
-      qs('#jobActions').innerHTML = '';
-      let tries=0;
-      const iv = setInterval(async ()=>{
-        tries++;
-        try{
-          const r = await fetch(`${BACKEND}/search/${encodeURIComponent(job_id)}/status`,{ headers:{'Authorization':`Bearer ${token()}`}});
-          if(!r.ok) throw new Error('status error');
-          const d = await r.json(); // { status: queued|running|ready|error, download_url? }
-          if(d.status==='ready' && d.download_url){
-            clearInterval(iv);
-            qs('#jobStatus').innerHTML = 'Listo para descargar.';
-            qs('#jobActions').innerHTML = `<a class="btn" href="${d.download_url}">Descargar PDF/ZIP</a>`;
-          }else if(d.status==='error'){
-            clearInterval(iv); qs('#jobStatus').innerHTML = '<span class="err">Hubo un error en el procesamiento.</span>';
-          }else{
-            qs('#jobStatus').textContent = `Progreso: ${d.status || '…'}`;
-          }
-        }catch(err){ if(tries>20){ clearInterval(iv); qs('#jobStatus').textContent='Sin conexión. Intenta luego.'; } }
-      }, 2500);
-    }
-
-    // ===== EVENTS =====
-    document.addEventListener('DOMContentLoaded', ()=>{
-      renderCredits();
-      if(token()){ qs('#loginBtn').style.display='none'; qs('#logoutBtn').style.display='inline-flex'; }
-      qs('#loginBtn').addEventListener('click', ()=> openModal('loginModal'));
-      qs('#logoutBtn').addEventListener('click', ()=>{ localStorage.removeItem('bauza_token'); setCredits(0); qs('#loginBtn').style.display='inline-flex'; qs('#logoutBtn').style.display='none'; });
-      qs('#searchBtn').addEventListener('click', startSearch);
-      document.querySelectorAll('[data-plan]').forEach(b=> b.addEventListener('click', ()=> createOrder(b.dataset.plan)) );
-    });
+        bar.style.width = p + "%";
+      }, 500);
+    };
   </script>
-</body>
-</html>
+
 </body>
 </html>
