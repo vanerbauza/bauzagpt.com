@@ -6,7 +6,7 @@ export default async function handler(req, res) {
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
   const { email, plan = 'pro', query = '' } = req.body || {};
 
-  const PRICE_ID = 'prod_TDPUaJEH5CSeTX '; // <-- Pega tu price real
+  const PRICE_ID = 'prod_Tuputamadrerxd'; // 
 
   try {
     const session = await stripe.checkout.sessions.create({
