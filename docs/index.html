@@ -1,107 +1,114 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8">
-  <title>BAUZA GPT — OSINT</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <title>BauzaGPT — OSINT bajo demanda</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <style>
-    body{
-      margin:0;
-      font-family:system-ui, Arial;
-      background:#000;
-      color:#e5e7eb;
-    }
-    .wrap{
-      max-width:800px;
-      margin:60px auto;
-      padding:20px;
-      text-align:center;
-    }
-    .btn{
-      padding:14px 20px;
-      border-radius:12px;
-      border:1px solid #22d3ee;
-      background:#020617;
-      color:#67e8f9;
-      font-size:16px;
-      cursor:pointer;
-    }
-    .modal{
-      position:fixed;
-      inset:0;
-      background:rgba(0,0,0,.8);
-      display:none;
-      place-items:center;
-    }
-    .modal.open{ display:grid; }
-    .box{
-      background:#020617;
-      padding:24px;
-      border-radius:16px;
-      border:1px solid #22d3ee;
-      width:90%;
-      max-width:420px;
-    }
-    .progress{
-      height:10px;
-      background:#111;
-      border-radius:999px;
-      overflow:hidden;
-      margin-top:16px;
-    }
-    .bar{
-      height:100%;
-      width:0%;
-      background:#22d3ee;
-      transition:width .4s;
-    }
-  </style>
+  <!-- SEO básico -->
+  <meta name="description" content="BauzaGPT es una plataforma OSINT que genera reportes PDF profesionales bajo demanda." />
+
+  <!-- Estilos -->
+  <link rel="stylesheet" href="./css/main.css" />
+
+  <!-- Firebase SDK (v10 modular) -->
+  <script type="module" src="./js/firebase-init.js"></script>
+  <script type="module" src="./js/auth.js"></script>
+  <script type="module" src="./js/orders.js"></script>
 </head>
 
 <body>
 
-  <div class="wrap">
-    <h1>BAUZA GPT</h1>
-    <p>Análisis OSINT con información pública</p>
+  <!-- ================= HEADER ================= -->
+  <header class="topbar">
+    <div class="logo">BauzaGPT</div>
 
-    <button class="btn" id="startBtn">Iniciar análisis</button>
-  </div>
+    <div class="auth-area">
+      <button id="loginBtn" class="btn primary">Iniciar sesión con Google</button>
 
-  <div class="modal" id="jobModal">
-    <div class="box">
-      <h3>Analizando…</h3>
-      <p id="status">Inicializando</p>
-
-      <div class="progress">
-        <div class="bar" id="bar"></div>
+      <div id="userBox" class="user-box hidden">
+        <span id="userEmail"></span>
+        <button id="logoutBtn" class="btn small">Salir</button>
       </div>
-
-      <p style="font-size:12px;opacity:.7;margin-top:12px">
-        El proceso continuará aunque cierres la página
-      </p>
     </div>
-  </div>
+  </header>
 
-  <script>
-    const modal = document.getElementById("jobModal");
-    const bar   = document.getElementById("bar");
-    const status= document.getElementById("status");
+  <!-- ================= HERO ================= -->
+  <section class="hero">
+    <h1>OSINT profesional, rápido y verificable</h1>
+    <p>Genera reportes OSINT en PDF por solo <b>$20 MXN</b> por búsqueda.</p>
+  </section>
 
-    document.getElementById("startBtn").onclick = ()=>{
-      modal.classList.add("open");
+  <!-- ================= APP ================= -->
+  <main class="app">
 
-      let p = 0;
-      const iv = setInterval(()=>{
-        p += Math.random()*8;
-        if(p >= 100){
-          p = 100;
-          clearInterval(iv);
-          status.textContent = "Proceso finalizado";
-        }
-        bar.style.width = p + "%";
-      }, 500);
-    };
+    <!-- Estado: NO autenticado -->
+    <section id="guestSection" class="card">
+      <h2>Comienza iniciando sesión</h2>
+      <p>Usamos Google para identificarte de forma segura.</p>
+      <button class="btn primary" onclick="loginWithGoogle()">Login con Google</button>
+    </section>
+
+    <!-- Estado: autenticado -->
+    <section id="userSection" class="card hidden">
+
+      <h2>Crear reporte OSINT</h2>
+
+      <label for="targetInput">Objetivo (correo, usuario, dominio, etc.)</label>
+      <input
+        id="targetInput"
+        type="text"
+        placeholder="ej. test@example.com"
+        class="input"
+      />
+
+      <button class="btn success" onclick="createOrder()">
+        Generar reporte ($20 MXN)
+      </button>
+
+      <div id="orderResult" class="result-box hidden"></div>
+    </section>
+
+  </main>
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="footer">
+    <p>© 2025 BauzaGPT · OSINT responsable</p>
+  </footer>
+
+  <!-- ================= LOGIC ================= -->
+  <script type="module">
+    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+    import { auth } from "./js/firebase-init.js";
+
+    const loginBtn = document.getElementById("loginBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const userBox = document.getElementById("userBox");
+    const userEmail = document.getElementById("userEmail");
+
+    const guestSection = document.getElementById("guestSection");
+    const userSection = document.getElementById("userSection");
+
+    logoutBtn.addEventListener("click", async () => {
+      await signOut(auth);
+    });
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        loginBtn.classList.add("hidden");
+        userBox.classList.remove("hidden");
+        userEmail.textContent = user.email;
+
+        guestSection.classList.add("hidden");
+        userSection.classList.remove("hidden");
+      } else {
+        loginBtn.classList.remove("hidden");
+        userBox.classList.add("hidden");
+
+        guestSection.classList.remove("hidden");
+        userSection.classList.add("hidden");
+      }
+    });
   </script>
 
 </body>
