@@ -1,115 +1,118 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <title>BauzaGPT — OSINT bajo demanda</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="utf-8">
+  <title>BauzaGPT —  OSINT research</title>
 
-  <!-- SEO básico -->
-  <meta name="description" content="BauzaGPT es una plataforma OSINT que genera reportes PDF profesionales bajo demanda." />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Plataforma OSINT bajo demanda. Informes documentados, trazables y listos para uso de peritos civiles y  corporativos .">
 
-  <!-- Estilos -->
-  <link rel="stylesheet" href="./css/main.css" />
-
-  <!-- Firebase SDK (v10 modular) -->
-  <script type="module" src="./js/firebase-init.js"></script>
-  <script type="module" src="./js/auth.js"></script>
-  <script type="module" src="./js/orders.js"></script>
+  <link rel="stylesheet" href="./styles.css">
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 
 <body>
 
-  <!-- ================= HEADER ================= -->
-  <header class="topbar">
-    <div class="logo">BauzaGPT</div>
+<header class="header">
+  <div class="container">
+    <h1 class="logo">BAUZA<span>GPT</span></h1>
+    <p class="tagline">OSINT research</p>
+  </div>
+</header>
 
-    <div class="auth-area">
-      <button id="loginBtn" class="btn primary">Iniciar sesión con Google</button>
+<main class="container">
 
-      <div id="userBox" class="user-box hidden">
-        <span id="userEmail"></span>
-        <button id="logoutBtn" class="btn small">Salir</button>
-      </div>
+  <!-- ACCESO -->
+  <section class="card">
+    <h2>Acceso</h2>
+
+    <div id="login-box">
+      <p>Inicia sesión para comenzar una investigación.</p>
+      <div id="google-login"></div>
     </div>
-  </header>
 
-  <!-- ================= HERO ================= -->
-  <section class="hero">
-    <h1>OSINT profesional, rápido y verificable</h1>
-    <p>Genera reportes OSINT en PDF por solo <b>$20 MXN</b> por búsqueda.</p>
+    <div id="user-box" hidden>
+      <p>
+        Sesión activa: <strong><span id="user-email"></span></strong>
+      </p>
+      <button id="logout-btn" class="btn secondary">Cerrar sesión</button>
+    </div>
   </section>
 
-  <!-- ================= APP ================= -->
-  <main class="app">
+  <!-- NUEVA BÚSQUEDA -->
+  <section id="search" class="card" hidden>
+    <h2>Nueva investigación OSINT</h2>
 
-    <!-- Estado: NO autenticado -->
-    <section id="guestSection" class="card">
-      <h2>Comienza iniciando sesión</h2>
-      <p>Usamos Google para identificarte de forma segura.</p>
-      <button class="btn primary" onclick="loginWithGoogle()">Login con Google</button>
-    </section>
+    <label for="target">
+      Objetivo
+      <span class="hint">(persona, email, usuario, dominio, teléfono)</span>
+    </label>
 
-    <!-- Estado: autenticado -->
-    <section id="userSection" class="card hidden">
+    <input
+      id="target"
+      type="text"
+      placeholder="Ejemplo: nombre completo o correo"
+      autocomplete="off"
+    >
 
-      <h2>Crear reporte OSINT</h2>
+    <button id="start-search" class="btn primary">
+      Iniciar búsqueda — $20 MXN
+    </button>
 
-      <label for="targetInput">Objetivo (correo, usuario, dominio, etc.)</label>
-      <input
-        id="targetInput"
-        type="text"
-        placeholder="ej. test@example.com"
-        class="input"
-      />
+    <p class="note">
+      El resultado es un informe OSINT en PDF, que recolecta toda huella digital que ha dejado publicamente tu target a investigar de manera muy sencilla tan solo hacer clic en los url de la informacion encontrada .
+    </p>
+  </section>
 
-      <button class="btn success" onclick="createOrder()">
-        Generar reporte ($20 MXN)
-      </button>
+  <!-- ESTADO -->
+  <section id="order-status" class="card" hidden>
+    <h2>Estado de la investigación</h2>
 
-      <div id="orderResult" class="result-box hidden"></div>
-    </section>
+    <!-- Spinner -->
+    <div id="spinner" class="spinner" hidden></div>
 
-  </main>
+    <!-- Texto de estado -->
+    <p id="status-text">
+      Preparando solicitud…
+    </p>
 
-  <!-- ================= FOOTER ================= -->
-  <footer class="footer">
-    <p>© 2025 BauzaGPT · OSINT responsable</p>
-  </footer>
+    <!-- Descarga -->
+    <button
+      id="download-pdf"
+      class="btn primary"
+      disabled
+    >
+      Descargar informe PDF
+    </button>
+  </section>
 
-  <!-- ================= LOGIC ================= -->
-  <script type="module">
-    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
-    import { auth } from "./js/firebase-init.js";
+  <!-- PRÓXIMAMENTE -->
+  <section class="card muted">
+    <h2>Modo Empresarial</h2>
+    <p>
+      Próximamente:
+      búsquedas masivas, historial por empresa,
+      facturación y reportes avanzados.
+    </p>
+  </section>
 
-    const loginBtn = document.getElementById("loginBtn");
-    const logoutBtn = document.getElementById("logoutBtn");
-    const userBox = document.getElementById("userBox");
-    const userEmail = document.getElementById("userEmail");
+</main>
 
-    const guestSection = document.getElementById("guestSection");
-    const userSection = document.getElementById("userSection");
+<footer class="footer">
+  <div class="container">
+    <p>© <span id="year"></span> BauzaGPT</p>
+    <p class="legal">
+      Plataforma OSINT profesional. Uso responsable.
+    </p>
+  </div>
+</footer>
 
-    logoutBtn.addEventListener("click", async () => {
-      await signOut(auth);
-    });
+<script src="./js/auth.js"></script>
+<script src="./js/orders.js"></script>
 
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        loginBtn.classList.add("hidden");
-        userBox.classList.remove("hidden");
-        userEmail.textContent = user.email;
-
-        guestSection.classList.add("hidden");
-        userSection.classList.remove("hidden");
-      } else {
-        loginBtn.classList.remove("hidden");
-        userBox.classList.add("hidden");
-
-        guestSection.classList.remove("hidden");
-        userSection.classList.add("hidden");
-      }
-    });
-  </script>
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
 
 </body>
 </html>
