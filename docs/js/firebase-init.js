@@ -3,12 +3,12 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/fireba
 import { getAuth } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyD3a7cv735RQPYsXMdn4KWQ-NDugL7WyfI",
-  authDomain: "studio-6473341422-75630.firebaseapp.com",
-  projectId: "studio-6473341422-75630",
-  storageBucket: "studio-6473341422-75630.firebasestorage.app",
-  messagingSenderId: "240684953453",
-  appId: "1:240684953453:web:6027f3b025c9ee22e8b464"
+  apiKey: "AIzaSyBaHoDEcL8ZjVoJJiTbcSZGAiKJJgfmfZc",
+  authDomain: "bauzagpt-fbdca.firebaseapp.com",
+  projectId: "bauzagpt-fbdca",
+  storageBucket: "bauzagpt-fbdca.firebasestorage.app",
+  messagingSenderId: "766060384370",
+  appId: "1:766060384370:web:fc19c978fe43be4e86b2eb"
 };
 export const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
