@@ -2,7 +2,7 @@
 import { setToken, getToken, clearToken, isLoggedIn } from "./session.js";
 console.log("app.js loaded");
 
-const API_BASE = "http://localhost:8080";
+const API_BASE = "https://bauzagpt-backend.onrender.com";
 
 const loginDiv = document.getElementById("login");
 const appDiv = document.getElementById("app");
@@ -29,7 +29,7 @@ if (isLoggedIn()) {
   showLoggedOut();
 }
 
-import { setToken } from "./session.js";
+
 
 window.handleGoogleLogin = async function (response) {
   console.log("[GSI] credential received");
