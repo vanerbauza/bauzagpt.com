@@ -1,0 +1,67 @@
+##################################
+# OS / Editor
+##################################
+.DS_Store
+Thumbs.db
+*.log
+
+##################################
+# Node / Frontend
+##################################
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+##################################
+# Environment / secrets
+##################################
+.env
+.env.local
+.env.production
+.env.development
+
+##################################
+# Build / cache
+##################################
+dist/
+build/
+.cache/
+
+##################################
+# Backups / basura de taller
+##################################
+_backup*/
+*_backup/
+*_old/
+_local_backup/
+site_backup/
+
+##################################
+# Reports / generated
+##################################
+docs/reportes/
+
+##################################
+# IDEs
+##################################
+.vscode/
+.idea/
+*.code-workspace
+
+##################################
+# Backends y repos incrustados (NO frontend)
+##################################
+archive/
+backend/
+backend.py
+
+##################################
+# Firebase Studio / exports basura
+##################################
+Firebase Auth Flow - Firebase Studio_files/
+
+##################################
+# Repos git incrustados
+##################################
+**/.git

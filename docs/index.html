@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>BauzaGPT —  OSINT research</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Plataforma OSINT bajo demanda. Informes documentados, trazables y listos para uso de peritos civiles y  corporativos .">
+
+  <link rel="stylesheet" href="./styles.css">
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+
+<body>
+
+<header class="header">
+  <div class="container">
+    <h1 class="logo">BAUZA<span>GPT</span></h1>
+    <p class="tagline">OSINT research</p>
+  </div>
+</header>
+
+<main class="container">
+
+  <!-- ACCESO -->
+  <section class="card">
+    <h2>Acceso</h2>
+
+    <div id="login-box">
+      <p>Inicia sesión para comenzar una investigación.</p>
+      <div id="google-login"></div>
+    </div>
+
+    <div id="user-box" hidden>
+      <p>
+        Sesión activa: <strong><span id="user-email"></span></strong>
+      </p>
+      <button id="logout-btn" class="btn secondary">Cerrar sesión</button>
+    </div>
+  </section>
+
+  <!-- NUEVA BÚSQUEDA -->
+  <section id="search" class="card" hidden>
+    <h2>Nueva investigación OSINT</h2>
+
+    <label for="target">
+      Objetivo
+      <span class="hint">(persona, email, usuario, dominio, teléfono)</span>
+    </label>
+
+    <input
+      id="target"
+      type="text"
+      placeholder="Ejemplo: nombre completo o correo"
+      autocomplete="off"
+    >
+
+    <button id="start-search" class="btn primary">
+      Iniciar búsqueda — $20 MXN
+    </button>
+
+    <p class="note">
+      El resultado es un informe OSINT en PDF, que recolecta toda huella digital que ha dejado publicamente tu target a investigar de manera muy sencilla tan solo hacer clic en los url de la informacion encontrada .
+    </p>
+  </section>
+
+  <!-- ESTADO -->
+  <section id="order-status" class="card" hidden>
+    <h2>Estado de la investigación</h2>
+
+    <!-- Spinner -->
+    <div id="spinner" class="spinner" hidden></div>
+
+    <!-- Texto de estado -->
+    <p id="status-text">
+      Preparando solicitud…
+    </p>
+
+    <!-- Descarga -->
+    <button
+      id="download-pdf"
+      class="btn primary"
+      disabled
+    >
+      Descargar informe PDF
+    </button>
+  </section>
+
+  <!-- PRÓXIMAMENTE -->
+  <section class="card muted">
+    <h2>Modo Empresarial</h2>
+    <p>
+      Próximamente:
+      búsquedas masivas, historial por empresa,
+      facturación y reportes avanzados.
+    </p>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <p>© <span id="year"></span> BauzaGPT</p>
+    <p class="legal">
+      Plataforma OSINT profesional. Uso responsable.
+    </p>
+  </div>
+</footer>
+
+<script src="./js/auth.js"></script>
+<script src="./js/orders.js"></script>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+
+</body>
+</html>
