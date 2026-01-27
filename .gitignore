@@ -65,3 +65,10 @@ Firebase Auth Flow - Firebase Studio_files/
 # Repos git incrustados
 ##################################
 **/.git
+##################################
+# basura local no versionada
+##################################
+app/
+cfw/
+deploy.sh
+*viejo*
