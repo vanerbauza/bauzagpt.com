@@ -1,6 +1,4 @@
-// docs/js/auth.js
-// Manejo de autenticación Google con Firebase
-
+// /docs/js/auth.js
 import { auth } from "./firebase-init.js";
 import {
   GoogleAuthProvider,
@@ -12,20 +10,45 @@ import {
 const provider = new GoogleAuthProvider();
 let currentUser = null;
 
-export function initAuth() {
-  const googleContainer = document.getElementById("google-login");
-  const btnLogout      = document.getElementById("btn-logout");
-  const status         = document.getElementById("auth-status");
+function getEl(id) {
+  return document.getElementById(id);
+}
 
-  if (!googleContainer || !btnLogout || !status) {
-    console.warn("Auth UI elements not found");
+function ensureLoginButton() {
+  // Caso A: ya existe un botón explícito
+  let btnLogin = getEl("btn-login");
+  if (btnLogin) return btnLogin;
+
+  // Caso B: existe contenedor donde debemos crearlo
+  const container = getEl("google-login");
+  if (!container) return null;
+
+  // Evitar duplicados si se llama 2 veces
+  btnLogin = container.querySelector("#btn-login");
+  if (btnLogin) return btnLogin;
+
+  btnLogin = document.createElement("button");
+  btnLogin.id = "btn-login";
+  btnLogin.className = "btn primary";
+  btnLogin.textContent = "Iniciar sesión con Google";
+  container.appendChild(btnLogin);
+
+  return btnLogin;
+}
+
+export function initAuth() {
+  const status = getEl("auth-status") || getEl("auth-message");
+  const btnLogout = getEl("btn-logout") || getEl("logout-btn");
+  const btnLogin = ensureLoginButton();
+
+  if (!status || !btnLogout || !btnLogin) {
+    console.warn("Auth UI elements not found", {
+      status: !!status,
+      btnLogout: !!btnLogout,
+      btnLogin: !!btnLogin
+    });
     return;
   }
-
-  // Crear botón de login Google dinámicamente
-  const btnLogin = document.createElement("button");
-  btnLogin.textContent = "Iniciar sesión con Google";
-  btnLogin.className = "btn primary";
 
   btnLogin.onclick = async () => {
     try {
@@ -36,10 +59,12 @@ export function initAuth() {
     }
   };
 
-  googleContainer.appendChild(btnLogin);
-
   btnLogout.onclick = async () => {
-    await signOut(auth);
+    try {
+      await signOut(auth);
+    } catch (err) {
+      console.error("Logout error:", err);
+    }
   };
 
   onAuthStateChanged(auth, (user) => {
@@ -49,10 +74,16 @@ export function initAuth() {
       status.textContent = `Sesión iniciada: ${user.email}`;
       btnLogin.style.display = "none";
       btnLogout.style.display = "inline-block";
+
+      const searchSection = getEl("search-section");
+      if (searchSection) searchSection.style.display = "block";
     } else {
       status.textContent = "No has iniciado sesión";
       btnLogin.style.display = "inline-block";
       btnLogout.style.display = "none";
+
+      const searchSection = getEl("search-section");
+      if (searchSection) searchSection.style.display = "none";
     }
   });
 }
