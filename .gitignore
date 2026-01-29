@@ -25,3 +25,15 @@ _local_backup/
 
 # reports / generated
 docs/reportes/
+# local dumps / archives
+archive/
+Firebase Auth Flow - Firebase Studio_files/
+backend/
+*viejo*.txt
+
+# node
+node_modules/
+
+# os
+.DS_Store
+Thumbs.db
