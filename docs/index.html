@@ -132,5 +132,20 @@
   });
 </script>
 
+<!-- =======================
+     SCRIPTS
+======================== -->
+<script>
+  document.getElementById("year").textContent = new Date().getFullYear();
+</script>
+
+<script type="module">
+  import { initAuth } from "./js/auth.js";
+  import { initOrders } from "./js/orders.js";
+
+  initAuth();
+  initOrders();
+</script>
 </body>
 </html>
+
