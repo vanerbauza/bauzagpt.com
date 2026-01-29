@@ -2,12 +2,16 @@
 <html lang="es">
 <head>
   <meta charset="utf-8">
-  <title>BauzaGPT —  OSINT research</title>
+  <title>BauzaGPT — OSINT research</title>
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Plataforma OSINT bajo demanda. Informes documentados, trazables y listos para uso de peritos civiles y  corporativos .">
+  <meta name="description"
+        content="Plataforma OSINT bajo demanda. Informes documentados, trazables y legales no se hackea a nadie.">
 
+  <!-- Estilos -->
   <link rel="stylesheet" href="./css/main.css">
+
+  <!-- Google Identity -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 
@@ -22,97 +26,118 @@
 
 <main class="container">
 
-  <!-- ACCESO -->
-  <section class="card">
+  <!-- =======================
+       ACCESO / AUTH
+  ======================== -->
+  <section id="auth-section" class="card">
     <h2>Acceso</h2>
 
-    <div id="login-box">
-      <p>Inicia sesión para comenzar una investigación.</p>
-      <div id="google-login"></div>
-    </div>
+    <p id="auth-status">No has iniciado sesión</p>
 
-    <div id="user-box" hidden>
-      <p>
-        Sesión activa: <strong><span id="user-email"></span></strong>
-      </p>
-      <button id="logout-btn" class="btn secondary">Cerrar sesión</button>
-    </div>
+    <div id="google-login"></div>
+
+    <button id="btn-logout"
+            class="btn secondary"
+            style="display:none;">
+      Cerrar sesión
+    </button>
   </section>
 
-  <!-- NUEVA BÚSQUEDA -->
-  <section id="search" class="card" hidden>
+  <!-- =======================
+       INICIAR BUSQUEDA 
+  ======================== -->
+  <section id="search-section"
+           class="card"
+           style="display:none;">
+
     <h2>Nueva investigación OSINT</h2>
 
-    <label for="target">
+    <label for="targetInput">
       Objetivo
-      <span class="hint">(persona, email, usuario, dominio, teléfono)</span>
+      <span class="hint">
+        (persona, email, usuario, dominio, teléfono)
+      </span>
     </label>
 
-    <input
-      id="target"
-      type="text"
-      placeholder="Ejemplo: nombre completo o correo"
-      autocomplete="off"
-    >
+    <input id="targetInput"
+           type="text"
+           placeholder="Ejemplo: nombre completo correo username de red social etc"
+           autocomplete="off">
 
-    <button id="start-search" class="btn primary">
+    <button id="btn-create-order"
+            class="btn primary">
       Iniciar búsqueda — $20 MXN
     </button>
 
     <p class="note">
-      El resultado es un informe OSINT en PDF, que recolecta toda huella digital que ha dejado publicamente tu target a investigar de manera muy sencilla tan solo hacer clic en los url de la informacion encontrada .
+      El resultado es un informe OSINT en PDF con toda la huella
+      digital pública encontrada sobre el objetivo no somos responsables de lo que hagan con la informacion obtenida ya que el mismo autor la hizo publica en su momento.
     </p>
   </section>
 
-  <!-- ESTADO -->
-  <section id="order-status" class="card" hidden>
+  <!-- =======================
+       ESTADO DE ORDEN
+  ======================== -->
+  <section id="status-section"
+           class="card"
+           style="display:none;">
+
     <h2>Estado de la investigación</h2>
 
-    <!-- Spinner -->
-    <div id="spinner" class="spinner" hidden></div>
-
-    <!-- Texto de estado -->
-    <p id="status-text">
-      Preparando solicitud…
+    <p>
+      Referencia:
+      <strong>
+        <span id="referenceCode"></span>
+      </strong>
     </p>
 
-    <!-- Descarga -->
-    <button
-      id="download-pdf"
-      class="btn primary"
-      disabled
-    >
+    <p>
+      Estado:
+      <strong>
+        <span id="orderStatus">—</span>
+      </strong>
+    </p>
+
+    <p id="instructions"></p>
+
+    <button id="btnDownload"
+            class="btn primary"
+            style="display:none;">
       Descargar informe PDF
     </button>
-  </section>
-
-  <!-- PRÓXIMAMENTE -->
-  <section class="card muted">
-    <h2>Modo Empresarial</h2>
-    <p>
-      Próximamente:
-      búsquedas masivas, historial por empresa,
-      facturación y reportes avanzados.
-    </p>
   </section>
 
 </main>
 
 <footer class="footer">
   <div class="container">
-    <p>© <span id="year"></span> BauzaGPT</p>
+    <p>
+      © <span id="year"></span> BauzaGPT
+    </p>
     <p class="legal">
-      Plataforma OSINT profesional. Uso responsable.
+      Plataforma OSINT publica
+	  proximamente una segunda y mas profunda opcion de busqueda dirigida a procesos juridicos y empresariales.
     </p>
   </div>
 </footer>
 
-
-
-
+<!-- =======================
+     SCRIPTS
+======================== -->
 <script>
-  document.getElementById('year').textContent = new Date().getFullYear();
+  document.getElementById('year').textContent =
+    new Date().getFullYear();
 </script>
 
-<script type="module" src="./js/app.js?v=20260124"></script>`n<script type="module" src="./js/app.js"></script>`n<script type="module" src="./js/app.js"></script>`n<script type="module" src="./js/app.js"></script>`n</body>
+<script type="module">
+  import { initAuth } from './js/auth.js';
+  import { initOrders } from './js/orders.js';
+
+  window.addEventListener('DOMContentLoaded', () => {
+    initAuth();
+    initOrders();
+  });
+</script>
+
+</body>
 </html>

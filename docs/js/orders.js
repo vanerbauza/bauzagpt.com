@@ -1,40 +1,43 @@
 // docs/js/orders.js
-console.log("orders.js cargado");
+// Manejo de creación de órdenes, estado y descarga de PDF
 
-import { auth } from "./firebase-init.js";
+import { auth } from './firebase-init.js';
 import {
   onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+} from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
 
-// API base (local / prod)
-const API_BASE = "http://localhost:8080";
+// ==============================
+// CONFIGURACIÓN
+// ==============================
+const API_BASE = 'https://bauzagpt-backend.onrender.com'; 
+// ⚠️ Ajusta si tu backend usa otra URL
 
 let currentOrderId = null;
 let pollTimer = null;
 
-/**
- * Crear orden PRO
- */
+// ==============================
+// API CALLS
+// ==============================
 async function createOrder(target) {
   const user = auth.currentUser;
-  if (!user) throw new Error("Usuario no autenticado");
+  if (!user) throw new Error('Usuario no autenticado');
 
   const token = await user.getIdToken();
 
   const res = await fetch(`${API_BASE}/api/orders`, {
-    method: "POST",
+    method: 'POST',
     headers: {
-      "Content-Type": "application/json",
-	   "Authorization": `Bearer ${token}`
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
     },
     body: JSON.stringify({
-      plan: "PRO",
+      plan: 'PRO',
       target
     })
   });
 
   if (!res.ok) {
-    let msg = "Error creando orden";
+    let msg = 'Error creando la orden';
     try {
       const j = await res.json();
       msg = j.error || msg;
@@ -45,26 +48,39 @@ async function createOrder(target) {
   return res.json();
 }
 
-/**
- * Consultar estado de la orden
- */
 async function getOrderStatus() {
   const user = auth.currentUser;
   if (!user || !currentOrderId) return null;
 
-  const res = await fetch(`${API_BASE}/api/orders/${currentOrderId}`, {
-    headers: {
-      "Authorization": `Bearer ${token}`
+  const token = await user.getIdToken();
+
+  const res = await fetch(
+    `${API_BASE}/api/orders/${currentOrderId}`,
+    {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
     }
-  });
+  );
 
   if (!res.ok) return null;
   return res.json();
 }
 
-/**
- * Polling cada 15 segundos
- */
+// ==============================
+// UI HELPERS
+// ==============================
+function showDownload() {
+  const btn = document.getElementById('btnDownload');
+  if (!btn) return;
+
+  btn.style.display = 'inline-block';
+  btn.onclick = () => {
+    window.location.href =
+      `${API_BASE}/api/orders/${currentOrderId}/download`;
+  };
+}
+
 function startPolling() {
   if (pollTimer) clearInterval(pollTimer);
 
@@ -73,93 +89,76 @@ function startPolling() {
       const data = await getOrderStatus();
       if (!data) return;
 
-      const statusEl = document.getElementById("orderStatus");
-      if (statusEl) statusEl.textContent = data.status;
+      const statusEl = document.getElementById('orderStatus');
+      const refEl = document.getElementById('referenceCode');
+      const instEl = document.getElementById('instructions');
 
-      if (data.status === "ready") {
+      if (statusEl) statusEl.textContent = data.status;
+      if (refEl) refEl.textContent = data.referenceCode || '';
+      if (instEl) instEl.textContent = data.instructions || '';
+
+      if (data.status === 'ready') {
         clearInterval(pollTimer);
         showDownload();
       }
-    } catch (e) {
-      console.error("Polling error:", e);
+    } catch (err) {
+      console.error('[Polling error]', err);
     }
-  }, 15000);
+  }, 15000); // cada 15s
 }
 
-/**
- * Mostrar botón de descarga
- */
-function showDownload() {
-  const btn = document.getElementById("btnDownload");
-  if (!btn) return;
+// ==============================
+// INIT
+// ==============================
+export function initOrders() {
+  const searchSection = document.getElementById('search-section');
+  const statusSection = document.getElementById('status-section');
+  const btnCreate = document.getElementById('btn-create-order');
 
-  btn.style.display = "inline-block";
-  btn.onclick = () => {
-    window.location.href = `${API_BASE}/api/orders/${currentOrderId}/download`;
-  };
-}
-
-/**
- * Conectar UI
- */
-function bindUI() {
-  console.log("bindUI ejecutado");
-
-  const btn = document.getElementById("btn-create-order");
-  if (!btn) {
-    console.error("btnGenerate no encontrado");
-    return;
-  }
-
-  btn.onclick = async () => {
-    console.log("CLICK Generate report");
-
-    const targetEl = document.getElementById("targetInput");
-    const target = targetEl?.value?.trim();
-
-    if (!target) {
-      alert("Introduce un objetivo de búsqueda");
-      return;
-    }
-
-    try {
-      const order = await createOrder(target);
-      currentOrderId = order.orderId;
-
-      const statusEl = document.getElementById("orderStatus");
-      const refEl = document.getElementById("referenceCode");
-      const instEl = document.getElementById("instructions");
-
-      if (statusEl) statusEl.textContent = order.status;
-      if (refEl) refEl.textContent = order.referenceCode || "";
-      if (instEl) instEl.textContent = order.instructions || "";
-
-      if (order.status !== "ready") {
-        startPolling();
-      } else {
-        showDownload();
-      }
-    } catch (e) {
-      alert(e.message);
-    }
-  };
-}
-
-/**
- * Esperar DOM + Auth
- */
-window.addEventListener("DOMContentLoaded", () => {
-  console.log("DOM listo");
-
-  // Si el usuario ya estaba logueado
-  if (auth.currentUser) {
-    bindUI();
-  }
-
-  // Cambios de estado de auth
+  // Mostrar / ocultar secciones según auth
   onAuthStateChanged(auth, (user) => {
     if (user) {
-      bindUI();
+      if (searchSection) searchSection.style.display = 'block';
+    } else {
+      if (searchSection) searchSection.style.display = 'none';
+      if (statusSection) statusSection.style.display = 'none';
     }
   });
-});
+
+  // Crear orden
+  if (btnCreate) {
+    btnCreate.onclick = async () => {
+      const input = document.getElementById('targetInput');
+      const target = input?.value?.trim();
+
+      if (!target) {
+        alert('Introduce un objetivo de búsqueda');
+        return;
+      }
+
+      try {
+        const order = await createOrder(target);
+        currentOrderId = order.orderId;
+
+        if (statusSection) statusSection.style.display = 'block';
+
+        const statusEl = document.getElementById('orderStatus');
+        const refEl = document.getElementById('referenceCode');
+        const instEl = document.getElementById('instructions');
+
+        if (statusEl) statusEl.textContent = order.status;
+        if (refEl) refEl.textContent = order.referenceCode || '';
+        if (instEl) instEl.textContent = order.instructions || '';
+
+        if (order.status === 'ready') {
+          showDownload();
+        } else {
+          startPolling();
+        }
+
+      } catch (err) {
+        alert(err.message);
+      }
+    };
+  }
+}

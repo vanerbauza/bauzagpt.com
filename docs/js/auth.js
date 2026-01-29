@@ -1,4 +1,6 @@
-// /docs/js/auth.js
+// docs/js/auth.js
+// Manejo de autenticación Google con Firebase
+
 import { auth } from "./firebase-init.js";
 import {
   GoogleAuthProvider,
@@ -8,18 +10,22 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 
 const provider = new GoogleAuthProvider();
-
 let currentUser = null;
 
 export function initAuth() {
-  const btnLogin = document.getElementById("btn-login");
-  const btnLogout = document.getElementById("btn-logout");
-  const status = document.getElementById("auth-status");
+  const googleContainer = document.getElementById("google-login");
+  const btnLogout      = document.getElementById("btn-logout");
+  const status         = document.getElementById("auth-status");
 
-  if (!btnLogin || !btnLogout || !status) {
+  if (!googleContainer || !btnLogout || !status) {
     console.warn("Auth UI elements not found");
     return;
   }
+
+  // Crear botón de login Google dinámicamente
+  const btnLogin = document.createElement("button");
+  btnLogin.textContent = "Iniciar sesión con Google";
+  btnLogin.className = "btn primary";
 
   btnLogin.onclick = async () => {
     try {
@@ -29,6 +35,8 @@ export function initAuth() {
       alert("Error al iniciar sesión con Google");
     }
   };
+
+  googleContainer.appendChild(btnLogin);
 
   btnLogout.onclick = async () => {
     await signOut(auth);
