@@ -10,33 +10,10 @@ import {
 const provider = new GoogleAuthProvider();
 let currentUser = null;
 
-function ensureLoginButton() {
-  // Si ya existe, úsalo
-  let btn = document.getElementById("btn-login");
-  if (btn) return btn;
-
-  // Si no existe, créalo dentro de #google-login
-  let host = document.getElementById("google-login");
-  if (!host) {
-    host = document.createElement("div");
-    host.id = "google-login";
-    const section = document.getElementById("auth-section") || document.body;
-    section.appendChild(host);
-  }
-
-  btn = document.createElement("button");
-  btn.id = "btn-login";
-  btn.type = "button";
-  btn.className = "btn primary";
-  btn.textContent = "Iniciar sesión con Google";
-  host.appendChild(btn);
-  return btn;
-}
-
 export function initAuth() {
+  const btnLogin = document.getElementById("btn-login");
   const btnLogout = document.getElementById("btn-logout");
   const status = document.getElementById("auth-status");
-  const btnLogin = ensureLoginButton();
 
   if (!btnLogin || !btnLogout || !status) {
     console.warn("Auth UI elements not found", {
@@ -57,7 +34,11 @@ export function initAuth() {
   };
 
   btnLogout.onclick = async () => {
-    await signOut(auth);
+    try {
+      await signOut(auth);
+    } catch (err) {
+      console.error("Logout error:", err);
+    }
   };
 
   onAuthStateChanged(auth, (user) => {
@@ -67,10 +48,16 @@ export function initAuth() {
       status.textContent = `Sesión iniciada: ${user.email}`;
       btnLogin.style.display = "none";
       btnLogout.style.display = "inline-block";
+
+      const searchSection = document.getElementById("search-section");
+      if (searchSection) searchSection.style.display = "block";
     } else {
       status.textContent = "No has iniciado sesión";
       btnLogin.style.display = "inline-block";
       btnLogout.style.display = "none";
+
+      const searchSection = document.getElementById("search-section");
+      if (searchSection) searchSection.style.display = "none";
     }
   });
 }
