@@ -32,7 +32,7 @@
     <p id="auth-status">No has iniciado sesión</p>
 
     <!-- Aquí auth.js crea el botón #btn-login automáticamente -->
-    <div id="google-login"></div>
+    <div id="google-login"><button id="btn-login" class="btn primary">Iniciar sesión con Google</button></div>
 
     <button id="btn-logout"
             class="btn secondary"
@@ -126,26 +126,11 @@
   import { initAuth } from './js/auth.js';
   import { initOrders } from './js/orders.js';
 
-  window.addEventListener('DOMContentLoaded', () => {
-    initAuth();
-    initOrders();
-  });
-</script>
-
-<!-- =======================
-     SCRIPTS
-======================== -->
-<script>
-  document.getElementById("year").textContent = new Date().getFullYear();
-</script>
-
-<script type="module">
-  import { initAuth } from "./js/auth.js";
-  import { initOrders } from "./js/orders.js";
-
   initAuth();
   initOrders();
 </script>
+
 </body>
 </html>
+
 
