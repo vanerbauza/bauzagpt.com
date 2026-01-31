@@ -24,7 +24,7 @@ async function createOrder(target) {
 
   const token = await user.getIdToken();
 
-  const res = await fetch(`${API_BASE}/api/checkout`, {
+  const res = await fetch(`${API_BASE}/api/orders`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -55,7 +55,7 @@ async function getOrderStatus() {
   const token = await user.getIdToken();
 
   const res = await fetch(
-    `${API_BASE}/api/checkout/${currentOrderId}`,
+    `${API_BASE}/api/orders/${currentOrderId}`,
     {
       headers: {
         'Authorization': `Bearer ${token}`
@@ -77,7 +77,7 @@ function showDownload() {
   btn.style.display = 'inline-block';
   btn.onclick = () => {
     window.location.href =
-      `${API_BASE}/api/checkout/${currentOrderId}/download`;
+      `${API_BASE}/api/orders/${currentOrderId}/download`;
   };
 }
 
