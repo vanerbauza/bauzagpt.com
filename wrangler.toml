@@ -1,3 +1,0 @@
-name = "bauzagpt-auth"
-main = "cfw/auth-worker.js"
-compatibility_date = "2024-10-01"

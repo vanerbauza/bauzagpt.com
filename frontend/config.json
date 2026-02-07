@@ -1,7 +1,0 @@
-﻿{
-    "apiBase":  "https://marketplace-throwing-subject-atlas.trycloudflare.com",
-    "firebase":  {
-                     "apiKey":  "TU_API_KEY",
-                     "authDomain":  "TU_PROYECTO.firebaseapp.com"
-                 }
-}

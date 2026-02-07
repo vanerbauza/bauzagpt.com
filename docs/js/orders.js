@@ -9,8 +9,8 @@ import {
 // ==============================
 // CONFIGURACIÓN
 // ==============================
-const API_BASE = 'https://bauzagpt-backend.onrender.com'; 
-// ⚠️ Ajusta si tu backend usa otra URL
+const API_BASE = 'https://bauzagpt-backend.fly.dev'; 
+
 
 let currentOrderId = null;
 let pollTimer = null;
@@ -77,7 +77,7 @@ function showDownload() {
   btn.style.display = 'inline-block';
   btn.onclick = () => {
     window.location.href =
-      `${API_BASE}/api/orders/${currentOrderId}/download`;
+      `${API_BASE}/api/orders/${currentOrderId}/pdf`;
   };
 }
 
