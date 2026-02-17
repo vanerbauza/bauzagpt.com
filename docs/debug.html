@@ -1,0 +1,133 @@
+<!-- Guardar como docs/debug.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>BauzaGPT Debug Console</title>
+  <style>
+    body { background: #000; color: #0f0; font-family: monospace; padding: 20px; }
+    .container { max-width: 800px; margin: 0 auto; }
+    h1 { color: #f00; }
+    button { background: #f00; color: #fff; padding: 10px; margin: 5px; border: none; cursor: pointer; }
+    button:hover { background: #cc0000; }
+    .output { background: #111; padding: 10px; margin: 10px 0; border: 1px solid #0f0; min-height: 100px; overflow-y: auto; max-height: 300px; }
+    .success { color: #0f0; }
+    .error { color: #f00; }
+    input { background: #222; color: #0f0; padding: 10px; width: 100%; margin: 10px 0; border: 1px solid #0f0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🐛 BauzaGPT Debug Console</h1>
+    
+    <h2>1. Verificar Backend</h2>
+    <button onclick="testBackendPing()">Test /__ping</button>
+    <button onclick="testBackendHealth()">Test /health</button>
+    
+    <h2>2. Verificar CORS</h2>
+    <button onclick="testCORS()">Test CORS preflight</button>
+    
+    <h2>3. Test de Órdenes (requiere login)</h2>
+    <input type="text" id="targetInput" placeholder="Ingresa un objetivo para buscar...">
+    <button onclick="testCreateOrder()">Test POST /api/orders</button>
+    
+    <h2>Output</h2>
+    <div class="output" id="output"></div>
+  </div>
+
+  <script>
+    const BACKEND_URL = "https://bauzagpt-backend.fly.dev";
+    const output = document.getElementById("output");
+
+    function log(msg, type = "info") {
+      const timestamp = new Date().toLocaleTimeString();
+      const color = type === "error" ? "error" : type === "success" ? "success" : "info";
+      const html = `<div class="${color}">[${timestamp}] ${msg}</div>`;
+      output.innerHTML += html;
+      output.scrollTop = output.scrollHeight;
+    }
+
+    async function testBackendPing() {
+      log("→ Testing /__ping...");
+      try {
+        const response = await fetch(`${BACKEND_URL}/__ping`);
+        const data = await response.json();
+        log(`✓ Backend respondió: ${JSON.stringify(data)}`, "success");
+      } catch (err) {
+        log(`✗ Error: ${err.message}`, "error");
+      }
+    }
+
+    async function testBackendHealth() {
+      log("→ Testing /health...");
+      try {
+        const response = await fetch(`${BACKEND_URL}/health`);
+        const data = await response.json();
+        log(`✓ Backend health: ${JSON.stringify(data)}`, "success");
+      } catch (err) {
+        log(`✗ Error: ${err.message}`, "error");
+      }
+    }
+
+    async function testCORS() {
+      log("→ Testing CORS preflight...");
+      try {
+        const response = await fetch(`${BACKEND_URL}/api/orders`, {
+          method: "OPTIONS",
+          headers: {
+            "Origin": window.location.origin,
+            "Access-Control-Request-Method": "POST",
+            "Access-Control-Request-Headers": "content-type,authorization"
+          }
+        });
+        log(`✓ CORS preflight respondió: ${response.status}`, "success");
+        log(`Headers: ${JSON.stringify(Object.fromEntries(response.headers))}`, "success");
+      } catch (err) {
+        log(`✗ Error CORS: ${err.message}`, "error");
+      }
+    }
+
+    async function testCreateOrder() {
+      log("→ Testing POST /api/orders...");
+      
+      // Simular un token (para testing)
+      const mockToken = "test-token-" + Date.now();
+      const target = document.getElementById("targetInput").value.trim();
+      
+      if (!target) {
+        log("✗ Ingresa un objetivo primero", "error");
+        return;
+      }
+
+      log(`Enviando target: "${target}"`);
+      log(`Usando token (mock): ${mockToken.substring(0, 20)}...`);
+
+      try {
+        const response = await fetch(`${BACKEND_URL}/api/orders`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${mockToken}`
+          },
+          body: JSON.stringify({ target })
+        });
+
+        log(`✓ Respuesta del servidor: ${response.status} ${response.statusText}`, "success");
+        
+        const text = await response.text();
+        try {
+          const data = JSON.parse(text);
+          log(`Datos: ${JSON.stringify(data, null, 2)}`, "success");
+        } catch {
+          log(`Respuesta (no JSON): ${text}`, "info");
+        }
+      } catch (err) {
+        log(`✗ Error de conexión: ${err.message}`, "error");
+      }
+    }
+
+    // Inicializar
+    log("Debug Console cargado. Usa los botones para testear.", "success");
+  </script>
+</body>
+</html>
