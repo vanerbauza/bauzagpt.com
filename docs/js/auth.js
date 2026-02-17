@@ -46,16 +46,16 @@ export function initAuth() {
 
     if (user) {
       status.textContent = `Sesión iniciada: ${user.email}`;
-      btnLogin.style.display = "none";
-      btnLogout.style.display = "inline-block";
+      btnLogin.classList.add("hidden");
+      btnLogout.classList.remove("hidden");
 
-      if (searchSection) searchSection.style.display = "block";
+      if (searchSection) searchSection.classList.remove("hidden");
     } else {
       status.textContent = "No has iniciado sesión";
-      btnLogin.style.display = "inline-block";
-      btnLogout.style.display = "none";
+      btnLogin.classList.remove("hidden");
+      btnLogout.classList.add("hidden");
 
-      if (searchSection) searchSection.style.display = "none";
+      if (searchSection) searchSection.classList.add("hidden");
     }
   });
 }

@@ -90,6 +90,11 @@ body::before {
   background: #555;
 }
 
+/* Clase para ocultar elementos */
+.hidden {
+  display: none !important;
+}
+
 /* Tarjeta */
 .card {
   background: rgba(0, 0, 0, 0.65);
