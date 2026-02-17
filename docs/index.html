@@ -1,20 +1,51 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-  <meta charset='UTF-8'>
-  <title>BauzaGPT OSINT</title>
+  <meta charset="UTF-8">
+  <title>BauzaGPT — OSINT research</title>
+  <link rel="stylesheet" href="css/styles.css">
 </head>
+
 <body>
 
-  <h1>BauzaGPT OSINT</h1>
+  <div class="container">
 
-  <input id='target' placeholder='Usuario, email, teléfono…'>
-  <button id='startBtn'>Buscar</button>
+    <h1 class="title">BAUZAGPT</h1>
+    <p class="subtitle">OSINT research</p>
 
-  <script src='https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js'></script>
-  <script src='https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js'></script>
+    <div class="card">
+      <h2>Nueva investigación OSINT</h2>
 
-  <script src='js/auth.js'></script>
-  <script src='js/index.js'></script>
+      <label for="targetInput">Objetivo (persona, email, usuario, dominio, teléfono)</label>
+      <input id="targetInput" type="text" placeholder="Ejemplo: nombre completo, correo, username…">
+
+      <button id="btn-create-order" class="btn-primary">
+        Iniciar búsqueda — $20 MXN
+      </button>
+
+      <p class="note">
+        El resultado es un informe OSINT en PDF con huella digital pública encontrada sobre el objetivo.
+      </p>
+    </div>
+
+    <footer>
+      © 2026 BauzaGPT — Plataforma OSINT pública.
+    </footer>
+
+  </div>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+
+  <!-- Inicialización -->
+  <script src="js/firebase-init.js"></script>
+
+  <!-- Autenticación -->
+  <script src="js/auth.js"></script>
+
+  <!-- Órdenes (Stripe) -->
+  <script src="js/orders.js"></script>
+
 </body>
 </html>
