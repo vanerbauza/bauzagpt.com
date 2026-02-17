@@ -1,4 +1,4 @@
-import { auth, getCurrentUser } from "./auth.js";
+import { auth } from "./firebase-init.js";
 
 export function initOrders() {
   const btnCreateOrder = document.getElementById("btn-create-order");
