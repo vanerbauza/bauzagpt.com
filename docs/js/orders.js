@@ -1,8 +1,8 @@
 import { auth } from "./firebase-init.js";
 
 const BACKEND_URL = "https://bauzagpt-backend.fly.dev";
-const TIMEOUT_MS = 30000; // 30 segundos
-const MAX_RETRIES = 2; // Reintentar hasta 2 veces
+const TIMEOUT_MS = 60000; // 60 segundos
+const MAX_RETRIES = 1; // Reintentar 1 vez solamente
 
 /**
  * Hacer una petición al backend con timeout y reintentos
@@ -14,63 +14,60 @@ const MAX_RETRIES = 2; // Reintentar hasta 2 veces
 async function fetchWithTimeout(url, options = {}, retryCount = 0) {
   // Crear un AbortController NUEVO para esta petición
   const controller = new AbortController();
-  
-  // Configurar timeout
-  const timeoutId = setTimeout(() => {
-    console.warn(`[Orders] Timeout de ${TIMEOUT_MS}ms alcanzado, abortando...`);
-    controller.abort("timeout");
-  }, TIMEOUT_MS);
+  let timeoutId = null;
 
   try {
-    console.log(`[Orders] Petición #${retryCount + 1} a ${url}`);
+    console.log(`[Orders] Intento #${retryCount + 1}: enviando petición...`);
     
+    // Configurar timeout
+    timeoutId = setTimeout(() => {
+      console.warn(`[Orders] ⏱ Timeout de ${TIMEOUT_MS / 1000}s alcanzado, abortando...`);
+      controller.abort();
+    }, TIMEOUT_MS);
+
     const response = await fetch(url, {
       ...options,
       signal: controller.signal
     });
 
-    clearTimeout(timeoutId);
-    
     if (!response.ok) {
       const errorText = await response.text();
-      console.error(`[Orders] HTTP ${response.status}: ${errorText}`);
+      console.error(`[Orders] ❌ HTTP ${response.status}: ${errorText}`);
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
 
     const data = await response.json();
-    console.log("[Orders] ✓ Respuesta exitosa del backend:", data);
+    console.log("[Orders] ✅ Respuesta exitosa:", data);
     return data;
 
   } catch (err) {
-    clearTimeout(timeoutId);
-
-    // Manejar cancelación por timeout
-    if (err.name === "AbortError" && err.message === "timeout") {
-      console.warn(`[Orders] Timeout en intento #${retryCount + 1}`);
+    // Detectar si fue timeout
+    const isTimeout = err.name === "AbortError";
+    
+    if (isTimeout) {
+      console.warn(`[Orders] ⚠️ Timeout en intento #${retryCount + 1}`);
       
       // Reintentar si quedan intentos
       if (retryCount < MAX_RETRIES) {
-        console.log(`[Orders] Reintentando... (${retryCount + 1}/${MAX_RETRIES})`);
+        console.log(`[Orders] 🔄 Reintentando... (${retryCount + 1}/${MAX_RETRIES})`);
         return fetchWithTimeout(url, options, retryCount + 1);
       }
       
       // Si se agotaron los reintentos
-      throw new Error("Timeout después de varios intentos. Verifica tu conexión.");
+      const message = `El servidor tardó demasiado en responder (${TIMEOUT_MS / 1000}s). Intenta de nuevo.`;
+      console.error(`[Orders] ❌ ${message}`);
+      throw new Error(message);
     }
 
-    // Manejar cancelación por otras razones
-    if (err.name === "AbortError") {
-      console.warn("[Orders] Petición cancelada:", err.message);
-      throw new Error("La solicitud fue cancelada.");
-    }
-
-    // Otros errores de fetch
-    console.error("[Orders] Error de fetch:", err.message);
+    // Otros errores
+    console.error("[Orders] ❌ Error:", err.message);
     throw err;
 
   } finally {
-    // Asegurar que se limpie el timeout SIEMPRE
-    clearTimeout(timeoutId);
+    // Limpiar el timeout SIEMPRE
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
   }
 }
 
@@ -81,11 +78,12 @@ export function initOrders() {
   const btnCreateOrder = document.getElementById("btn-create-order");
 
   if (!btnCreateOrder) {
-    console.error("[Orders] Botón no encontrado en el DOM");
+    console.error("[Orders] ❌ Botón no encontrado en el DOM");
     return;
   }
 
-  btnCreateOrder.addEventListener("click", async () => {
+  // Usar addEventListener en lugar de onclick para evitar duplicados
+  const handleOrderClick = async () => {
     const target = document.getElementById("targetInput").value.trim();
 
     // Validar que hay un objetivo
@@ -102,14 +100,14 @@ export function initOrders() {
     }
 
     try {
-      console.log("[Orders] Iniciando proceso de orden...");
+      console.log("\n[Orders] 🚀 ==================== NUEVA ORDEN ====================");
       console.log(`[Orders] Usuario: ${user.email}`);
       console.log(`[Orders] Objetivo: ${target}`);
 
       // Obtener token de Firebase
-      console.log("[Orders] Obteniendo token de Firebase...");
+      console.log("[Orders] 🔐 Obteniendo token de Firebase...");
       const idToken = await user.getIdToken();
-      console.log("[Orders] Token obtenido ✓");
+      console.log("[Orders] ✅ Token obtenido");
 
       // Hacer petición al backend
       const data = await fetchWithTimeout(
@@ -126,23 +124,25 @@ export function initOrders() {
 
       // Validar respuesta
       if (!data.checkoutUrl) {
-        console.error("[Orders] Respuesta sin checkoutUrl:", data);
+        console.error("[Orders] ❌ Respuesta sin checkoutUrl:", data);
         alert("Error: No se generó URL de pago.");
         return;
       }
 
       // Redirigir a Stripe
-      console.log("[Orders] Redirigiendo a Stripe...");
+      console.log("[Orders] 💳 Redirigiendo a Stripe...");
       window.location.href = data.checkoutUrl;
 
     } catch (err) {
-      console.error("[Orders] Error al procesar orden:", {
-        name: err.name,
-        message: err.message,
-        stack: err.stack
-      });
-      
+      console.error("[Orders] ❌ Error final:", err.message);
       alert(`Error: ${err.message}`);
+    } finally {
+      console.log("[Orders] 🏁 ==================== FIN ====================\n");
     }
-  });
+  };
+
+  // Remover listeners anteriores para evitar duplicados
+  btnCreateOrder.replaceWith(btnCreateOrder.cloneNode(true));
+  const newBtn = document.getElementById("btn-create-order");
+  newBtn.addEventListener("click", handleOrderClick);
 }
