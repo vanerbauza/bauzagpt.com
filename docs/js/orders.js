@@ -1,11 +1,11 @@
 import { auth } from "./firebase-init.js";
 
 const BACKEND_URL = "https://bauzagpt-backend.fly.dev";
-const TIMEOUT_MS = 60000; // 60 segundos
-const MAX_RETRIES = 1; // Reintentar 1 vez solamente
+const TIMEOUT_MS = 300000; // 5 minutos - sin prisa
+const MAX_RETRIES = 10; // Reintentar hasta 10 veces
 
 /**
- * Hacer una petición al backend con timeout y reintentos
+ * Hacer una petición al backend con timeout y reintentos ilimitados
  * @param {string} url - URL del endpoint
  * @param {object} options - Opciones del fetch
  * @param {number} retryCount - Número de reintentos (uso interno)
@@ -17,11 +17,12 @@ async function fetchWithTimeout(url, options = {}, retryCount = 0) {
   let timeoutId = null;
 
   try {
-    console.log(`[Orders] Intento #${retryCount + 1}: enviando petición...`);
+    const attemptNumber = retryCount + 1;
+    console.log(`[Orders] 🔄 Intento #${attemptNumber}: conectando con backend...`);
     
-    // Configurar timeout
+    // Configurar timeout (5 minutos)
     timeoutId = setTimeout(() => {
-      console.warn(`[Orders] ⏱ Timeout de ${TIMEOUT_MS / 1000}s alcanzado, abortando...`);
+      console.warn(`[Orders] ⏱ Timeout de ${TIMEOUT_MS / 1000 / 60}min alcanzado, abortando intento #${attemptNumber}...`);
       controller.abort();
     }, TIMEOUT_MS);
 
@@ -29,6 +30,8 @@ async function fetchWithTimeout(url, options = {}, retryCount = 0) {
       ...options,
       signal: controller.signal
     });
+
+    clearTimeout(timeoutId);
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -41,22 +44,31 @@ async function fetchWithTimeout(url, options = {}, retryCount = 0) {
     return data;
 
   } catch (err) {
-    // Detectar si fue timeout
-    const isTimeout = err.name === "AbortError";
+    clearTimeout(timeoutId);
+    const attemptNumber = retryCount + 1;
     
-    if (isTimeout) {
-      console.warn(`[Orders] ⚠️ Timeout en intento #${retryCount + 1}`);
+    // Detectar si fue timeout o error de conexión
+    const isTimeout = err.name === "AbortError";
+    const isNetworkError = !err.name; // Errores de red sin nombre específico
+    
+    if (isTimeout || isNetworkError) {
+      console.warn(`[Orders] ⚠️ ${isTimeout ? "Timeout" : "Error de conexión"} en intento #${attemptNumber}`);
       
-      // Reintentar si quedan intentos
+      // Reintentar siempre (sin límite real)
       if (retryCount < MAX_RETRIES) {
-        console.log(`[Orders] 🔄 Reintentando... (${retryCount + 1}/${MAX_RETRIES})`);
+        const waitTime = Math.min(1000 * (retryCount + 1), 10000); // Espera progresiva: 1s, 2s, 3s... máx 10s
+        console.log(`[Orders] ⏳ Esperando ${waitTime / 1000}s antes de reintentar... (${attemptNumber}/${MAX_RETRIES})`);
+        
+        await new Promise(resolve => setTimeout(resolve, waitTime));
         return fetchWithTimeout(url, options, retryCount + 1);
+      } else {
+        // Si se agotaron los reintentos iniciales, hacer reintentos "infinitos"
+        console.warn(`[Orders] 🔁 Agotados reintentos iniciales. Reintentando cada 15s indefinidamente...`);
+        
+        // Esperar 15 segundos y reintentar nuevamente
+        await new Promise(resolve => setTimeout(resolve, 15000));
+        return fetchWithTimeout(url, options, 0); // Reiniciar contador para mostrar bonito
       }
-      
-      // Si se agotaron los reintentos
-      const message = `El servidor tardó demasiado en responder (${TIMEOUT_MS / 1000}s). Intenta de nuevo.`;
-      console.error(`[Orders] ❌ ${message}`);
-      throw new Error(message);
     }
 
     // Otros errores
@@ -103,13 +115,16 @@ export function initOrders() {
       console.log("\n[Orders] 🚀 ==================== NUEVA ORDEN ====================");
       console.log(`[Orders] Usuario: ${user.email}`);
       console.log(`[Orders] Objetivo: ${target}`);
+      console.log(`[Orders] Backend: ${BACKEND_URL}`);
+      console.log(`[Orders] Timeout por intento: ${TIMEOUT_MS / 1000 / 60} minutos`);
+      console.log(`[Orders] Reintentos: ilimitados con espera progresiva`);
 
       // Obtener token de Firebase
       console.log("[Orders] 🔐 Obteniendo token de Firebase...");
       const idToken = await user.getIdToken();
       console.log("[Orders] ✅ Token obtenido");
 
-      // Hacer petición al backend
+      // Hacer petición al backend (con reintentos infinitos)
       const data = await fetchWithTimeout(
         `${BACKEND_URL}/api/orders`,
         {
@@ -135,7 +150,7 @@ export function initOrders() {
 
     } catch (err) {
       console.error("[Orders] ❌ Error final:", err.message);
-      alert(`Error: ${err.message}`);
+      alert(`Error: ${err.message}\n\nVerifica la consola (F12) para más detalles.`);
     } finally {
       console.log("[Orders] 🏁 ==================== FIN ====================\n");
     }
