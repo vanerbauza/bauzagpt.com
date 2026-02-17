@@ -68,26 +68,29 @@ body::before {
 .btn-auth {
   flex: 1;
   padding: 10px;
-  background: #1f90f0;
+  background: #cc0000;
   color: white;
-  border: none;
+  border: 2px solid #fff;
   border-radius: 6px;
   font-size: 14px;
   font-weight: bold;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: all 0.3s;
 }
 
 .btn-auth:hover {
-  background: #1575d0;
+  background: #990000;
+  transform: scale(1.05);
 }
 
 .btn-auth.btn-logout {
-  background: #666;
+  background: #333;
+  border: 2px solid #666;
 }
 
 .btn-auth.btn-logout:hover {
-  background: #555;
+  background: #222;
+  border: 2px solid #999;
 }
 
 /* Clase para ocultar elementos */
