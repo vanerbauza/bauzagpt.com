@@ -9,7 +9,7 @@ body {
   position: relative;
 }
 
-/* Imagen del toro */
+/* Imagen de portada */
 body::before {
   content: "";
   position: fixed;
@@ -17,7 +17,7 @@ body::before {
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: url("../img/toro.png"); /* Ajusta la ruta */
+  background-image: url("../img/portada.png");
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
@@ -48,6 +48,48 @@ body::before {
   opacity: 0.8;
 }
 
+/* Estado de autenticación */
+.auth-status {
+  font-size: 14px;
+  opacity: 0.9;
+  margin-top: 20px;
+  padding: 10px;
+  background: rgba(100, 100, 100, 0.3);
+  border-radius: 6px;
+}
+
+/* Botones de autenticación */
+.auth-buttons {
+  margin-top: 15px;
+  display: flex;
+  gap: 10px;
+}
+
+.btn-auth {
+  flex: 1;
+  padding: 10px;
+  background: #1f90f0;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.btn-auth:hover {
+  background: #1575d0;
+}
+
+.btn-auth.btn-logout {
+  background: #666;
+}
+
+.btn-auth.btn-logout:hover {
+  background: #555;
+}
+
 /* Tarjeta */
 .card {
   background: rgba(0, 0, 0, 0.65);
@@ -65,9 +107,10 @@ input {
   border-radius: 6px;
   border: none;
   font-size: 16px;
+  box-sizing: border-box;
 }
 
-/* Botón */
+/* Botón principal */
 .btn-primary {
   width: 100%;
   padding: 12px;
@@ -79,6 +122,7 @@ input {
   font-size: 18px;
   font-weight: bold;
   cursor: pointer;
+  transition: background 0.3s;
 }
 
 .btn-primary:hover {

@@ -1,4 +1,3 @@
-// /docs/js/auth.js
 import { auth } from "./firebase-init.js";
 import {
   GoogleAuthProvider,
@@ -14,9 +13,10 @@ export function initAuth() {
   const btnLogin = document.getElementById("btn-login");
   const btnLogout = document.getElementById("btn-logout");
   const status = document.getElementById("auth-status");
+  const searchSection = document.getElementById("search-section");
 
   if (!btnLogin || !btnLogout || !status) {
-    console.warn("Auth UI elements not found", {
+    console.error("[Auth] No se encontraron elementos de UI", {
       btnLogin: !!btnLogin,
       btnLogout: !!btnLogout,
       status: !!status
@@ -28,7 +28,7 @@ export function initAuth() {
     try {
       await signInWithPopup(auth, provider);
     } catch (err) {
-      console.error("Google login error:", err);
+      console.error("[Auth] Error Google login:", err);
       alert("Error al iniciar sesión con Google");
     }
   };
@@ -37,7 +37,7 @@ export function initAuth() {
     try {
       await signOut(auth);
     } catch (err) {
-      console.error("Logout error:", err);
+      console.error("[Auth] Error logout:", err);
     }
   };
 
@@ -49,14 +49,12 @@ export function initAuth() {
       btnLogin.style.display = "none";
       btnLogout.style.display = "inline-block";
 
-      const searchSection = document.getElementById("search-section");
       if (searchSection) searchSection.style.display = "block";
     } else {
       status.textContent = "No has iniciado sesión";
       btnLogin.style.display = "inline-block";
       btnLogout.style.display = "none";
 
-      const searchSection = document.getElementById("search-section");
       if (searchSection) searchSection.style.display = "none";
     }
   });

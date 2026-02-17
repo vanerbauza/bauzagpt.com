@@ -13,7 +13,14 @@
     <h1 class="title">BAUZAGPT</h1>
     <p class="subtitle">OSINT research</p>
 
-    <div class="card">
+    <div id="auth-status" class="auth-status">No has iniciado sesión</div>
+
+    <div class="auth-buttons">
+      <button id="btn-login" class="btn-auth">Iniciar sesión con Google</button>
+      <button id="btn-logout" class="btn-auth btn-logout" style="display: none;">Cerrar sesión</button>
+    </div>
+
+    <div id="search-section" class="card" style="display: none;">
       <h2>Nueva investigación OSINT</h2>
 
       <label for="targetInput">Objetivo (persona, email, usuario, dominio, teléfono)</label>
@@ -34,18 +41,14 @@
 
   </div>
 
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-
-  <!-- Inicialización -->
-  <script src="js/firebase-init.js"></script>
-
-  <!-- Autenticación -->
-  <script src="js/auth.js"></script>
-
-  <!-- Órdenes (Stripe) -->
-  <script src="js/orders.js"></script>
+  <!-- Inicialización Firebase modular -->
+  <script type="module">
+    import { initAuth } from "./js/auth.js";
+    import { initOrders } from "./js/orders.js";
+    
+    initAuth();
+    initOrders();
+  </script>
 
 </body>
 </html>
