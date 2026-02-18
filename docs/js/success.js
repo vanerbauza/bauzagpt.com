@@ -11,7 +11,7 @@ if (!sessionId) {
 // 2. Validar la sesión con el backend
 async function validateSession() {
     try {
-        const res = await fetch(`/api/stripe/session/${sessionId}`);
+        const res = await fetch(`https://bauzagpt-backend.fly.dev/api/stripe/session/${sessionId}`);
         const data = await res.json();
 
         if (!data || !data.orderId) {
