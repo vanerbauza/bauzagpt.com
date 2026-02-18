@@ -36,14 +36,14 @@ async function validateSession() {
 // 3. Revisar si el PDF ya está listo
 async function checkPDF() {
     try {
-        const res = await fetch(`/api/orders/${window.orderId}`);
+        const res = await fetch(`https://bauzagpt-backend.fly.dev/api/orders/${window.orderId}`);
         const data = await res.json();
 
         if (data.status === "ready") {
             document.getElementById("status").innerText =
                 "Informe listo para descargar.";
             const link = document.getElementById("download");
-            link.href = `/api/orders/${window.orderId}/pdf`;
+            link.href = `https://bauzagpt-backend.fly.dev/api/orders/${window.orderId}/pdf`;
             link.style.display = "block";
             return;
         }
