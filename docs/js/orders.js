@@ -1,4 +1,4 @@
-import { auth } from "./firebase-init.js";
+import { getCurrentUser } from "./auth.js";
 
 const BACKEND_URL = "https://bauzagpt-backend.fly.dev";
 const TIMEOUT_MS = 300000; // 5 minutos - sin prisa
@@ -94,19 +94,26 @@ export function initOrders() {
     return;
   }
 
+  console.log("[Orders] ✅ Botón encontrado, agregando listener...");
+
   // Usar addEventListener en lugar de onclick para evitar duplicados
   const handleOrderClick = async () => {
+    console.log("[Orders] 🔘 Click detectado en botón");
     const target = document.getElementById("targetInput").value.trim();
+    console.log(`[Orders] Input value: "${target}"`);
 
     // Validar que hay un objetivo
     if (!target) {
+      console.warn("[Orders] ⚠️ Target vacío");
       alert("Debes ingresar un objetivo.");
       return;
     }
 
     // Validar que el usuario está autenticado
-    const user = auth.currentUser;
+    const user = getCurrentUser();
+    console.log(`[Orders] User from getCurrentUser: ${user ? user.email : "null"}`);
     if (!user) {
+      console.warn("[Orders] ⚠️ Usuario no autenticado");
       alert("Debes iniciar sesión primero.");
       return;
     }
@@ -160,4 +167,5 @@ export function initOrders() {
   btnCreateOrder.replaceWith(btnCreateOrder.cloneNode(true));
   const newBtn = document.getElementById("btn-create-order");
   newBtn.addEventListener("click", handleOrderClick);
+  console.log("[Orders] ✅ Listener agregado al nuevo botón");
 }
