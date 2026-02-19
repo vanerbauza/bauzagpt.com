@@ -11,7 +11,15 @@ if (!sessionId) {
 // 2. Validar la sesión con el backend
 async function validateSession() {
     try {
-        const res = await fetch(`https://bauzagpt-backend.fly.dev/api/stripe/session/${sessionId}`);
+
+        const token = localStorage.getItem("token");
+
+        const res = await fetch(`https://bauzagpt-backend.fly.dev/api/stripe/session/${sessionId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
         const data = await res.json();
 
         if (!data || !data.orderId) {
@@ -36,14 +44,22 @@ async function validateSession() {
 // 3. Revisar si el PDF ya está listo
 async function checkPDF() {
     try {
-        const res = await fetch(`https://bauzagpt-backend.fly.dev/api/orders/${window.orderId}`);
+        const token = localStorage.getItem("token");
+
+        const res = await fetch(`https://bauzagpt-backend.fly.dev/api/orders/${window.orderId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
         const data = await res.json();
 
         if (data.status === "ready") {
             document.getElementById("status").innerText =
                 "Informe listo para descargar.";
+
             const link = document.getElementById("download");
-            link.href = `https://bauzagpt-backend.fly.dev/api/orders/${window.orderId}/pdf`;
+            link.href = `https://bauzagpt-backend.fly.dev/api/orders/${window.orderId}/pdf?token=${token}`;
             link.style.display = "block";
             return;
         }
