@@ -1,76 +1,105 @@
+// success-v2.js
+
 // 1. Leer session_id de la URL
 const params = new URLSearchParams(window.location.search);
 const sessionId = params.get("session_id");
 
+const statusEl = document.getElementById("status");
+const downloadLink = document.getElementById("download");
+
+// Validar que config.json ya cargó
+function waitForConfig() {
+    return new Promise(resolve => {
+        const check = () => {
+            if (window.__CONFIG && window.__CONFIG.BACKEND_URL) {
+                resolve();
+            } else {
+                setTimeout(check, 50);
+            }
+        };
+        check();
+    });
+}
+
 if (!sessionId) {
-    document.getElementById("status").innerText =
-        "Error: no se encontró el ID de sesión.";
+    statusEl.innerText = "Error: no se encontró el ID de sesión.";
     throw new Error("Missing session_id");
 }
 
-// 2. Validar la sesión con el backend
+// 2. Validar la sesión con el backend (solo session_id, sin JWT)
 async function validateSession() {
     try {
+        const BACKEND = window.__CONFIG.BACKEND_URL;
 
-        const token = localStorage.getItem("token");
+        const res = await fetch(`${BACKEND}/api/stripe/session/${sessionId}`);
 
-        const res = await fetch(`https://bauzagpt-backend.fly.dev/api/stripe/session/${sessionId}`, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        });
+        if (!res.ok) {
+            statusEl.innerText = "Error validando la sesión.";
+            console.error("Error en /api/stripe/session:", res.status);
+            return;
+        }
 
         const data = await res.json();
 
         if (!data || !data.orderId) {
-            document.getElementById("status").innerText =
-                "Error validando la sesión.";
+            statusEl.innerText = "Error validando la sesión.";
+            console.error("Respuesta inválida de /api/stripe/session:", data);
             return;
         }
 
+        // Guardamos el orderId globalmente para el polling
         window.orderId = data.orderId;
-        document.getElementById("status").innerText =
-            "Pago recibido. Generando informe…";
 
-        // Iniciar polling
+        statusEl.innerText = "Pago recibido. Generando informe…";
+
+        // Iniciar polling después de un pequeño delay
         setTimeout(checkPDF, 6000);
 
     } catch (err) {
-        document.getElementById("status").innerText =
-            "Error comunicando con el servidor.";
+        console.error("Error comunicando con el servidor en validateSession:", err);
+        statusEl.innerText = "Error comunicando con el servidor.";
     }
 }
 
-// 3. Revisar si el PDF ya está listo
+// 3. Revisar periódicamente si el PDF ya está listo (sin JWT)
 async function checkPDF() {
     try {
-        const token = localStorage.getItem("token");
+        const BACKEND = window.__CONFIG.BACKEND_URL;
 
-        const res = await fetch(`https://bauzagpt-backend.fly.dev/api/orders/${window.orderId}`, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        });
+        if (!window.orderId) {
+            console.error("orderId no definido antes de checkPDF");
+            statusEl.innerText = "Error verificando el informe.";
+            return;
+        }
+
+        const res = await fetch(`${BACKEND}/api/orders/${window.orderId}`);
+
+        if (!res.ok) {
+            console.error("Error en /api/orders/:id:", res.status);
+            statusEl.innerText = "Error verificando el informe.";
+            setTimeout(checkPDF, 6000);
+            return;
+        }
 
         const data = await res.json();
 
         if (data.status === "ready") {
-            document.getElementById("status").innerText =
-                "Informe listo para descargar.";
+            statusEl.innerText = "Informe listo para descargar.";
 
-            const link = document.getElementById("download");
-            link.href = `https://bauzagpt-backend.fly.dev/api/orders/${window.orderId}/pdf?token=${token}`;
-            link.style.display = "block";
+            downloadLink.href = `${BACKEND}/api/orders/${window.orderId}/pdf`;
+            downloadLink.style.display = "block";
             return;
         }
 
-        // Si no está listo, volver a intentar
+        statusEl.innerText = "Generando informe…";
         setTimeout(checkPDF, 6000);
 
     } catch (err) {
-        document.getElementById("status").innerText =
-            "Error verificando el informe.";
+        console.error("Error verificando el informe en checkPDF:", err);
+        statusEl.innerText = "Error verificando el informe.";
+        setTimeout(checkPDF, 6000);
     }
 }
 
-validateSession();
+// 4. Iniciar flujo cuando config.json esté listo
+waitForConfig().then(validateSession);
