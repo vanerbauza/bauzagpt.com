@@ -1,14 +1,10 @@
-// docs/js/auth-v2.js
-
-import { auth } from "./firebase-init-v2.js";
+import { auth, provider } from "./firebase-init.js";
 import {
-  GoogleAuthProvider,
   signInWithPopup,
   signOut,
   onAuthStateChanged,
 } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 
-const provider = new GoogleAuthProvider();
 let currentUser = null;
 
 /**
@@ -44,7 +40,7 @@ export function initAuth() {
     return;
   }
 
-  //  LOGIN CON GOOGLE + TOKEN PARA BACKEND
+  // LOGIN CON GOOGLE
   btnLogin.onclick = async () => {
     try {
       const result = await signInWithPopup(auth, provider);
@@ -61,7 +57,7 @@ export function initAuth() {
     }
   };
 
-  // LOGOUT LIMPIO
+  // LOGOUT
   btnLogout.onclick = async () => {
     try {
       await signOut(auth);
@@ -72,7 +68,7 @@ export function initAuth() {
     }
   };
 
-  //  SINCRONIZAR UI + TOKEN CON ESTADO DE FIREBASE
+  // SINCRONIZAR UI
   onAuthStateChanged(auth, async (user) => {
     currentUser = user;
 
@@ -82,7 +78,6 @@ export function initAuth() {
       btnLogout.classList.remove("hidden");
       if (searchSection) searchSection.classList.remove("hidden");
 
-      // Refrescar token al cambiar estado
       try {
         const token = await user.getIdToken(true);
         localStorage.setItem("token", token);
@@ -102,15 +97,14 @@ export function initAuth() {
 }
 
 /**
- * Devuelve el usuario actual (objeto FirebaseUser) o null.
+ * Devuelve el usuario actual
  */
 export function getCurrentUser() {
   return currentUser;
 }
 
 /**
- * Helper para hacer fetch autenticado hacia el backend.
- * Siempre manda: Authorization: Bearer <token>
+ * Helper para fetch autenticado
  */
 export async function authFetch(url, options = {}) {
   const token = await getIdToken();
