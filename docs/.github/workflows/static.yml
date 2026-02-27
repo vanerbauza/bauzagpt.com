@@ -1,0 +1,37 @@
+# ⚠️ DEPRECATED - No usar. GitHub Pages se sirve desde rama 'docs'
+# Simple workflow for deploying static content to GitHub Pages
+
+# on:
+#   # Runs on pushes targeting the default branch
+#   push:
+#     branches: ["main"]
+#
+#   # Allows you to run this workflow manually from the Actions tab
+#   workflow_dispatch:
+
+# En su lugar, GitHub Pages está configurado en:
+# Settings → Pages → Deploy from branch → docs / /
+
+name: "DEPRECATED - Deploy static content"
+
+on:
+  workflow_dispatch: # Manual only
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Skipped - Using GitHub Pages branch config instead"
+        run: echo "This workflow is deprecated. GitHub Pages deploys from 'docs' branch."

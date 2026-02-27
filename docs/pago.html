@@ -1,0 +1,92 @@
+cat > ~/bauzagpt.com/docs/pago.html <<'HTML'
+<!doctype html><html lang="es"><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Validar pago — BAUZA GPT</title>
+<style>
+:root{--bg:#0b1220;--panel:#0f172a;--txt:#e2e8f0;--muted:#94a3b8}
+*{box-sizing:border-box}body{margin:0;background:#0b1220;color:var(--txt);font-family:system-ui}
+.wrap{max-width:900px;margin:32px auto;padding:20px}
+.card{background:#0f172a;border:1px solid #1f2937;border-radius:16px;padding:20px}
+input,select,button,textarea{width:100%;padding:10px;border-radius:10px;border:1px solid #334155;background:#0b1220;color:#e2e8f0}
+label{display:block;margin:10px 0 6px}
+.btn{margin-top:12px;padding:12px 16px;border-radius:12px;border:1px solid #164e63;background:linear-gradient(90deg,#0ea5e9,#22d3ee);color:#fff;font-weight:700;cursor:pointer}
+.small{font-size:14px;color:#94a3b8}
+.notice{margin-top:12px;border:1px dashed #334155;padding:10px;border-radius:10px}
+a.link{color:#22d3ee}
+</style>
+<script src="/load-config.js" defer></script>
+<script>
+  function startApp(){
+    // Cuando tengas backend: usa window.__CONFIG.payments.* para POST /create y /verify
+    console.log('VALIDACIÓN listo, __CONFIG:', window.__CONFIG);
+  }
+  function generarOrderId(){
+    return 'ORDER-' + Math.random().toString(36).slice(2,8).toUpperCase();
+  }
+  window.addEventListener('DOMContentLoaded', ()=>{
+    const q = new URLSearchParams(location.search);
+    document.getElementById('orderId').value = q.get('oid') || generarOrderId();
+  });
+  function enviarCorreo(){
+    const email = 'bauza723@gmail.com';
+    const plan = document.getElementById('plan').value;
+    const orderId = document.getElementById('orderId').value.trim();
+    const ref = document.getElementById('ref').value.trim();
+    const dato = document.getElementById('dato').value.trim();
+    if(!orderId){ alert('Falta ORDER-ID'); return; }
+    if(!ref){ alert('Falta la referencia/nota del pago'); return; }
+    if(!dato){ alert('Falta el dato OSINT a investigar'); return; }
+    const cuerpo = encodeURIComponent(
+`Hola BAUZA GPT,
+Confirmo mi pago.
+
+PLAN: ${plan}
+ORDER-ID: ${orderId}
+REFERENCIA/NOTA: ${ref}
+DATO OSINT: ${dato}
+
+Quedo atento a la entrega. ¡Gracias!
+`
+    );
+    const subj = encodeURIComponent(`[BAUZA GPT] Validación pago ${orderId}`);
+    window.location.href = \`mailto:\${email}?subject=\${subj}&body=\${cuerpo}\`;
+  }
+</script>
+</head><body>
+  <div class="wrap">
+    <div class="card">
+      <h1>Validación de pago</h1>
+      <p class="small">
+        Paso 1: paga en la <a class="link" href="./index.html">portada</a> (PayPal recomendado).<br/>
+        Paso 2: llena y envía esta validación. Te respondemos con tu descarga segura o por correo.
+      </p>
+
+      <label>Plan</label>
+      <select id="plan">
+        <option>Básico $10 MXN</option>
+        <option>Pro $20 MXN</option>
+      </select>
+
+      <label>ORDER-ID (el de la portada o el que pusiste como nota en el pago)</label>
+      <input id="orderId" placeholder="ORDER-XXXXXX"/>
+
+      <label>Referencia / Nota del pago (o ID de transacción)</label>
+      <input id="ref" placeholder="Ej.: Nota en PayPal, ID de operación"/>
+
+      <label>Dato OSINT a investigar (teléfono, email, usuario, etc.)</label>
+      <textarea id="dato" rows="5" placeholder="Ej.: +52 33 12 34 56 78 o correo@dominio.com"></textarea>
+
+      <button class="btn" onclick="enviarCorreo()">Enviar validación por correo</button>
+
+      <div class="notice small">
+        * Sin WhatsApp. Entrega por descarga segura y/o correo.<br/>
+        * Si ya hiciste el pago, no vuelvas a pagar; solo envía esta validación.
+      </div>
+
+      <p class="small" style="margin-top:10px">
+        ¿Dudas? Vuelve al inicio: <a class="link" href="./index.html">www.bauzagpt.com</a>
+      </p>
+    </div>
+  </div>
+</body></html>
+HTML

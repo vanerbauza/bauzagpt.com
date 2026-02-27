@@ -1,0 +1,39 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+*.log
+
+# node
+node_modules/
+npm-debug.log*
+package-lock.json
+pnpm-lock.yaml
+
+# secrets / configs
+.env
+.env.*
+
+# backups / clones / dumps
+WWW-Shodan-API/
+_backup*/
+_backup_submodule_bauzagpt.com/
+site_backup/
+bauza-backend/
+bauzagpt-frontend/
+hacker/
+_local_backup/
+
+# reports / generated
+docs/reportes/
+# local dumps / archives
+archive/
+Firebase Auth Flow - Firebase Studio_files/
+backend/
+*viejo*.txt
+
+# node
+node_modules/
+
+# os
+.DS_Store
+Thumbs.db

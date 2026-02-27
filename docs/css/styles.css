@@ -1,0 +1,165 @@
+/* Reset del navegador */
+html {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Fondo general */
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100vh;
+  background: #000;
+  color: white;
+  font-family: Arial, sans-serif;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Imagen de portada */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("../img/portada.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  opacity: 0.40;
+  z-index: -1;
+}
+
+/* Contenedor principal */
+.container {
+  max-width: 480px;
+  width: 100%;
+  padding: 20px;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+}
+
+/* Títulos */
+.title {
+  font-size: 42px;
+  font-weight: bold;
+  margin-bottom: 0;
+}
+
+.subtitle {
+  margin-top: 0;
+  font-size: 18px;
+  opacity: 0.8;
+}
+
+/* Estado de autenticación */
+.auth-status {
+  font-size: 14px;
+  opacity: 0.9;
+  margin-top: 20px;
+  padding: 10px;
+  background: rgba(100, 100, 100, 0.3);
+  border-radius: 6px;
+}
+
+/* Botones de autenticación */
+.auth-buttons {
+  margin-top: 15px;
+  display: flex;
+  gap: 10px;
+}
+
+.btn-auth {
+  flex: 1;
+  padding: 10px;
+  background: #cc0000;
+  color: white;
+  border: 2px solid #fff;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-auth:hover {
+  background: #990000;
+  transform: scale(1.05);
+}
+
+.btn-auth.btn-logout {
+  background: #333;
+  border: 2px solid #666;
+}
+
+.btn-auth.btn-logout:hover {
+  background: #222;
+  border: 2px solid #999;
+}
+
+/* Clase para ocultar elementos */
+.hidden {
+  display: none !important;
+}
+
+/* Tarjeta */
+.card {
+  background: rgba(0, 0, 0, 0.65);
+  padding: 20px;
+  border-radius: 10px;
+  margin-top: 30px;
+  backdrop-filter: blur(4px);
+}
+
+/* Inputs */
+input {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  border-radius: 6px;
+  border: none;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+/* Botón principal */
+.btn-primary {
+  width: 100%;
+  padding: 12px;
+  margin-top: 15px;
+  background: red;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.btn-primary:hover {
+  background: #cc0000;
+}
+
+/* Nota */
+.note {
+  font-size: 13px;
+  opacity: 0.8;
+  margin-top: 10px;
+}
+
+/* Footer */
+footer {
+  margin-top: 40px;
+  font-size: 12px;
+  opacity: 0.7;
+}

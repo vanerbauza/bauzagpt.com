@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>BauzaGPT — OSINT research</title>
+
+  <!-- Estilos -->
+  <link rel="stylesheet" href="./css/styles.css">
+
+  <!-- Favicon emoji -->
+  <link rel="icon" href="data:image/svg+xml,
+    <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'>
+      <text y='75' font-size='75'>🐂</text>
+    </svg>">
+</head>
+
+<body>
+
+  <div class="container">
+
+    <h1 class="title">BAUZAGPT</h1>
+    <p class="subtitle">OSINT research</p>
+
+    <!-- Estado de autenticación -->
+    <div id="auth-status" class="auth-status">No has iniciado sesión</div>
+
+    <!-- Botones de login/logout -->
+    <div class="auth-buttons">
+      <button id="btn-login" class="btn-auth">Iniciar sesión con Google</button>
+      <button id="btn-logout" class="btn-auth btn-logout hidden">Cerrar sesión</button>
+    </div>
+
+    <!-- Sección principal (solo visible si hay login) -->
+    <div id="search-section" class="card hidden">
+      <h2>Nueva investigación OSINT</h2>
+
+      <label for="targetInput">Objetivo (persona, email, usuario, dominio, teléfono)</label>
+      <input id="targetInput" type="text" placeholder="Ejemplo: nombre completo, correo, username…">
+
+      <button id="btn-create-order" class="btn-primary">
+        Iniciar búsqueda — $20 MXN
+      </button>
+
+      <p class="note">
+        El resultado es un informe OSINT en PDF con huella digital pública encontrada sobre el objetivo.
+      </p>
+    </div>
+
+    <footer>
+      © 2026 BauzaGPT — Plataforma OSINT pública.
+    </footer>
+
+  </div>
+
+  <!-- Scripts -->
+  <script type="module">
+    import "./js/load-config.js";          // Carga config.json (BACKEND_URL)
+    import { initAuth } from "./js/auth.js";     // Login/logout con Firebase
+    import { initOrders } from "./js/orders.js"; // Crear órdenes y enviar a Stripe
+
+    initAuth();
+    initOrders();
+  </script>
+
+</body>
+</html>
