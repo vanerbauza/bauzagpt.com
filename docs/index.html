@@ -26,12 +26,14 @@
 
     <!-- Botones de login/logout -->
     <div class="auth-buttons">
+      
       <button id="btn-login" class="btn-auth">Iniciar sesión con Google</button>
       <button id="btn-logout" class="btn-auth btn-logout hidden">Cerrar sesión</button>
     </div>
 
     <!-- Sección principal (solo visible si hay login) -->
     <div id="search-section" class="card hidden">
+      
       <h2>Nueva investigación OSINT</h2>
 
       <label for="targetInput">Objetivo (persona, email, usuario, dominio, teléfono)</label>
@@ -42,7 +44,9 @@
       </button>
 
       <p class="note">
-        El resultado es un informe OSINT en PDF con huella digital pública encontrada sobre el objetivo.
+        El resultado es un informe OSINT en PDF con huella digital pública encontrada sobre el objetivo
+        no nos hacemos responsables de lo que el usuario haga con la informacion obtenida ya que el mismo
+        propietario y autor de dicha informacion fue quien la hizo publica en algun momento.
       </p>
     </div>
 
@@ -54,12 +58,14 @@
 
   <!-- Scripts -->
   <script type="module">
+    
     import { initAuth } from "./js/auth.js";     // Login/logout con Firebase
     import { initOrders } from "./js/orders.js"; // Crear órdenes y enviar a Stripe
     import "./js/load-config.js";          // Carga config.json (BACKEND_URL)
 
     initAuth();
     initOrders();
+  
   </script>
 
 </body>
