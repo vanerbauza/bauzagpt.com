@@ -57,16 +57,14 @@
   </div>
 
   <!-- Scripts -->
-  <script type="module">
-    
-    import { initAuth } from "./js/auth.js";     // Login/logout con Firebase
-    import { initOrders } from "./js/orders.js"; // Crear órdenes y enviar a Stripe
-    import "./js/load-config.js";          // Carga config.json (BACKEND_URL)
+<!-- Firebase -->
+<script type="module" src="./js/firebase-init.js"></script>
 
-    initAuth();
-    initOrders();
-  
-  </script>
+<!-- Configuración dinámica -->
+<script type="module" src="./js/load-config.js"></script>
 
-</body>
-</html><!-- force redeploy 02/27/2026 17:48:19 -->
+<!-- Autenticación -->
+<script type="module" src="./js/auth.js"></script>
+
+<!-- Órdenes (solo si esta página las usa) -->
+<script type="module" src="./js/orders.js"></script>

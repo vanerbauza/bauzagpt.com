@@ -1,0 +1,5 @@
+{
+  "BACKEND_URL": "https://bauzagpt-backend.fly.dev",
+  "STRIPE_PUBLIC_KEY": "pk_live_51SGxdDGpGxziN87jroMV6vpjGJjwypnN29Rj4Z7c5hTr7cQFdDAj9WiJGXpGAoPTYTG29Jtc9l1Q9zGdfZrjrkDte00T0qF9LsS",
+  "ENVIRONMENT": "production"
+}
