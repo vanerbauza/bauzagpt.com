@@ -1,8 +1,9 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
 import { 
-  initializeAuth, 
-  browserLocalPersistence, 
-  GoogleAuthProvider 
+  initializeAuth,
+  browserLocalPersistence,
+  browserPopupRedirectResolver,
+  GoogleAuthProvider
 } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 
 const firebaseConfig = {
@@ -16,9 +17,10 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 
+// Resolver correcto para popups SIN Firebase Hosting
 export const auth = initializeAuth(app, {
   persistence: browserLocalPersistence,
-  popupRedirectResolver: undefined
+  popupRedirectResolver: browserPopupRedirectResolver
 });
 
 export const provider = new GoogleAuthProvider();
