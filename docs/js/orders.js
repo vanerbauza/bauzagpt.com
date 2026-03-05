@@ -4,6 +4,10 @@ import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.1/f
 document.addEventListener("DOMContentLoaded", () => {
   const btnGenerate = document.getElementById("btn-generate");
 
+  if (!btnGenerate) {
+    return; // Exit if button doesn't exist on this page
+  }
+
   btnGenerate.addEventListener("click", async () => {
     const user = auth.currentUser;
 
