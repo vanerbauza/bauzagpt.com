@@ -83,12 +83,13 @@ body::before {
   padding: 10px;
   background: #cc0000;
   color: white;
-  border: 2px solid #fff;
+  border: none;
   border-radius: 6px;
   font-size: 14px;
   font-weight: bold;
   cursor: pointer;
   transition: all 0.3s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .btn-auth:hover {
@@ -98,12 +99,11 @@ body::before {
 
 .btn-auth.btn-logout {
   background: #333;
-  border: 2px solid #666;
+  border: none;
 }
 
 .btn-auth.btn-logout:hover {
   background: #222;
-  border: 2px solid #999;
 }
 
 /* Clase para ocultar elementos */
