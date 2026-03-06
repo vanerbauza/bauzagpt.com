@@ -10,6 +10,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnLogout = document.getElementById("btn-logout");
   const authStatus = document.getElementById("auth-status");
   const searchSection = document.getElementById("search-section");
+  const termsCheckbox = document.getElementById("terms-checkbox");
+
+  // Habilitar botón de login solo si acepta los términos
+  termsCheckbox.addEventListener("change", () => {
+    btnLogin.disabled = !termsCheckbox.checked;
+  });
 
   // Función para verificar token con backend
   const verifyTokenWithBackend = async (token) => {
@@ -42,8 +48,8 @@ document.addEventListener("DOMContentLoaded", () => {
       authStatus.textContent = "Sesión iniciada como: " + user.email;
       btnLogin.classList.add("hidden");
       btnLogout.classList.remove("hidden");
+      termsCheckbox.closest(".terms-container").classList.add("hidden");
       
-      // Mostrar sección de búsqueda
       if (searchSection) {
         searchSection.classList.remove("hidden");
       }
@@ -55,8 +61,8 @@ document.addEventListener("DOMContentLoaded", () => {
       authStatus.textContent = "No has iniciado sesión";
       btnLogin.classList.remove("hidden");
       btnLogout.classList.add("hidden");
+      termsCheckbox.closest(".terms-container").classList.remove("hidden");
       
-      // Ocultar sección de búsqueda
       if (searchSection) {
         searchSection.classList.add("hidden");
       }
