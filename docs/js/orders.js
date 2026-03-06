@@ -2,41 +2,67 @@ import { auth } from "./firebase-init.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 
 document.addEventListener("DOMContentLoaded", () => {
-  const btnGenerate = document.getElementById("btn-generate");
+  const btnCreateOrder = document.getElementById("btn-create-order");
+  const targetInput = document.getElementById("targetInput");
 
-  if (!btnGenerate) {
+  if (!btnCreateOrder) {
     return; // Exit if button doesn't exist on this page
   }
 
-  btnGenerate.addEventListener("click", async () => {
+  btnCreateOrder.addEventListener("click", async () => {
     const user = auth.currentUser;
 
     if (!user) {
-      alert("Debes iniciar sesión.");
+      alert("Debes iniciar sesión primero.");
       return;
     }
 
-    const token = await user.getIdToken();
-
-    const response = await fetch(`${window.BACKEND_URL}/orders/create`, {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        type: "osint-report",
-        timestamp: Date.now()
-      })
-    });
-
-    const data = await response.json();
-
-    if (!data.orderId) {
-      alert("Error creando orden.");
+    const target = targetInput?.value?.trim();
+    if (!target) {
+      alert("Por favor, ingresa un objetivo de búsqueda.");
       return;
     }
 
-    window.location.href = `${window.BACKEND_URL}/pdf/${data.orderId}?token=${token}`;
+    if (!window.BACKEND_URL) {
+      alert("Error: Configuración no cargada. Recarga la página.");
+      return;
+    }
+
+    try {
+      btnCreateOrder.disabled = true;
+      btnCreateOrder.textContent = "Procesando...";
+
+      const token = await user.getIdToken();
+
+      const response = await fetch(`${window.BACKEND_URL}/api/create-checkout-session`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          target: target,
+          type: "osint-report"
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error del servidor: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error("No se recibió URL de Stripe");
+      }
+
+    } catch (error) {
+      console.error("Error creando orden:", error);
+      alert("Error al crear la orden. Por favor, inténtalo de nuevo.");
+      btnCreateOrder.disabled = false;
+      btnCreateOrder.textContent = "Iniciar búsqueda — $20 MXN";
+    }
   });
 });
