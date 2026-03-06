@@ -1,6 +1,7 @@
 import { auth, provider } from "./firebase-init.js";
 import { 
-  signInWithPopup, 
+  signInWithRedirect,
+  getRedirectResult,
   onAuthStateChanged, 
   signOut 
 } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
@@ -42,6 +43,19 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
+  // Procesar resultado del redirect al volver de Google
+  getRedirectResult(auth).then(async (result) => {
+    if (result?.user) {
+      const token = await result.user.getIdToken();
+      await verifyTokenWithBackend(token);
+    }
+  }).catch((error) => {
+    if (error.code !== "auth/no-auth-event") {
+      console.error("Error en redirect de login:", error);
+      alert("Error al iniciar sesión. Por favor, inténtalo de nuevo.");
+    }
+  });
+
   // --- Estado de autenticación ---
   onAuthStateChanged(auth, async (user) => {
     if (user) {
@@ -73,33 +87,12 @@ document.addEventListener("DOMContentLoaded", () => {
   btnLogin.addEventListener("click", async () => {
     try {
       btnLogin.disabled = true;
-      btnLogin.textContent = "Iniciando sesión...";
-      
-      await signInWithPopup(auth, provider);
-      
-      btnLogin.textContent = "Iniciar sesión con Google";
-      btnLogin.disabled = false;
-
+      btnLogin.textContent = "Redirigiendo...";
+      await signInWithRedirect(auth, provider);
     } catch (error) {
       btnLogin.textContent = "Iniciar sesión con Google";
-      btnLogin.disabled = false;
-
-      if (error.code === "auth/popup-closed-by-user") {
-        console.log("El usuario cerró el popup antes de completar el login.");
-        return;
-      }
-
-      if (error.code === "auth/cancelled-popup-request") {
-        console.log("Se intentó abrir más de un popup de login.");
-        return;
-      }
-
-      if (error.code === "auth/popup-blocked") {
-        alert("El navegador bloqueó el popup. Por favor, permite popups para este sitio.");
-        return;
-      }
-
-      console.error("Error inesperado en login:", error);
+      btnLogin.disabled = !termsCheckbox.checked;
+      console.error("Error iniciando redirect:", error);
       alert("Error al iniciar sesión. Por favor, inténtalo de nuevo.");
     }
   });
