@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const token = await user.getIdToken();
 
-      const response = await fetch(`${window.BACKEND_URL}/api/create-checkout-session`, {
+      const response = await fetch(`${window.BACKEND_URL}/api/orders`, {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${token}`,
@@ -52,8 +52,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const data = await response.json();
 
-      if (data.url) {
-        window.location.href = data.url;
+      if (data.checkoutUrl) {
+        window.location.href = data.checkoutUrl;
       } else {
         throw new Error("No se recibió URL de Stripe");
       }
