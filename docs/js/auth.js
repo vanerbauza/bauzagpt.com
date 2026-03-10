@@ -1,7 +1,6 @@
 import { auth, provider } from "./firebase-init.js";
 import { 
-  signInWithRedirect,
-  getRedirectResult,
+  signInWithPopup,
   onAuthStateChanged, 
   signOut 
 } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
@@ -18,9 +17,8 @@ document.addEventListener("DOMContentLoaded", () => {
     btnLogin.disabled = !termsCheckbox.checked;
   });
 
-  // Función para verificar token con backend
+  // Función para verificar token con backend (registra/actualiza usuario en MongoDB)
   const verifyTokenWithBackend = async (token) => {
-    // Esperar hasta que BACKEND_URL esté disponible
     let attempts = 0;
     while (!window.BACKEND_URL && attempts < 20) {
       await new Promise(resolve => setTimeout(resolve, 100));
@@ -28,33 +26,23 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (!window.BACKEND_URL) {
-      console.error("BACKEND_URL no disponible después de esperar");
+      console.error("[AUTH] BACKEND_URL no disponible");
       return;
     }
 
     try {
-      await fetch(`${window.BACKEND_URL}/auth/verify`, {
+      const res = await fetch(`${window.BACKEND_URL}/auth/verify`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token })
       });
+      if (!res.ok) {
+        console.warn("[AUTH] Backend verify respondió:", res.status);
+      }
     } catch (err) {
-      console.error("Error verificando token con backend:", err);
+      console.error("[AUTH] Error verificando token con backend:", err);
     }
   };
-
-  // Procesar resultado del redirect al volver de Google
-  getRedirectResult(auth).then(async (result) => {
-    if (result?.user) {
-      const token = await result.user.getIdToken();
-      await verifyTokenWithBackend(token);
-    }
-  }).catch((error) => {
-    if (error.code !== "auth/no-auth-event") {
-      console.error("Error en redirect de login:", error);
-      alert("Error al iniciar sesión. Por favor, inténtalo de nuevo.");
-    }
-  });
 
   // --- Estado de autenticación ---
   onAuthStateChanged(auth, async (user) => {
@@ -63,7 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
       btnLogin.classList.add("hidden");
       btnLogout.classList.remove("hidden");
       termsCheckbox.closest(".terms-container").classList.add("hidden");
-      
+
       if (searchSection) {
         searchSection.classList.remove("hidden");
       }
@@ -75,25 +63,36 @@ document.addEventListener("DOMContentLoaded", () => {
       authStatus.textContent = "No has iniciado sesión";
       btnLogin.classList.remove("hidden");
       btnLogout.classList.add("hidden");
+      btnLogin.disabled = !termsCheckbox.checked;
       termsCheckbox.closest(".terms-container").classList.remove("hidden");
-      
+
       if (searchSection) {
         searchSection.classList.add("hidden");
       }
     }
   });
 
-  // --- Login con Google ---
+  // --- Login con Google (Popup — más confiable que redirect en navegadores modernos) ---
   btnLogin.addEventListener("click", async () => {
     try {
       btnLogin.disabled = true;
-      btnLogin.textContent = "Redirigiendo...";
-      await signInWithRedirect(auth, provider);
+      btnLogin.textContent = "Iniciando sesión...";
+      await signInWithPopup(auth, provider);
+      // onAuthStateChanged se encarga del resto automáticamente
     } catch (error) {
       btnLogin.textContent = "Iniciar sesión con Google";
       btnLogin.disabled = !termsCheckbox.checked;
-      console.error("Error iniciando redirect:", error);
-      alert("Error al iniciar sesión. Por favor, inténtalo de nuevo.");
+
+      // El usuario cerró el popup voluntariamente — no mostrar error
+      if (
+        error.code === "auth/popup-closed-by-user" ||
+        error.code === "auth/cancelled-popup-request"
+      ) {
+        return;
+      }
+
+      console.error("[AUTH] Error iniciando sesión:", error.code, error.message);
+      alert(`Error al iniciar sesión (${error.code}). Por favor, inténtalo de nuevo.`);
     }
   });
 
@@ -102,7 +101,7 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       await signOut(auth);
     } catch (err) {
-      console.error("Error cerrando sesión:", err);
+      console.error("[AUTH] Error cerrando sesión:", err);
     }
   });
 });
