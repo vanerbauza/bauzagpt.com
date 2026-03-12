@@ -1,4 +1,4 @@
-import { auth, provider } from "./firebase-init.js";
+import { auth, provider, facebookProvider } from "./firebase-init.js";
 import { 
   signInWithPopup,
   onAuthStateChanged, 
@@ -7,14 +7,16 @@ import {
 
 document.addEventListener("DOMContentLoaded", () => {
   const btnLogin = document.getElementById("btn-login");
+  const btnLoginFacebook = document.getElementById("btn-login-facebook");
   const btnLogout = document.getElementById("btn-logout");
   const authStatus = document.getElementById("auth-status");
   const searchSection = document.getElementById("search-section");
   const termsCheckbox = document.getElementById("terms-checkbox");
 
-  // Habilitar botón de login solo si acepta los términos
+  // Habilitar botones de login solo si acepta los términos
   termsCheckbox.addEventListener("change", () => {
     btnLogin.disabled = !termsCheckbox.checked;
+    btnLoginFacebook.disabled = !termsCheckbox.checked;
   });
 
   // Función para verificar token con backend (registra/actualiza usuario en MongoDB)
@@ -47,8 +49,9 @@ document.addEventListener("DOMContentLoaded", () => {
   // --- Estado de autenticación ---
   onAuthStateChanged(auth, async (user) => {
     if (user) {
-      authStatus.textContent = "Sesión iniciada como: " + user.email;
+      authStatus.textContent = "Sesión iniciada como: " + (user.email || user.displayName);
       btnLogin.classList.add("hidden");
+      btnLoginFacebook.classList.add("hidden");
       btnLogout.classList.remove("hidden");
       termsCheckbox.closest(".terms-container").classList.add("hidden");
 
@@ -62,8 +65,10 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
       authStatus.textContent = "No has iniciado sesión";
       btnLogin.classList.remove("hidden");
+      btnLoginFacebook.classList.remove("hidden");
       btnLogout.classList.add("hidden");
       btnLogin.disabled = !termsCheckbox.checked;
+      btnLoginFacebook.disabled = !termsCheckbox.checked;
       termsCheckbox.closest(".terms-container").classList.remove("hidden");
 
       if (searchSection) {
@@ -72,27 +77,39 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // --- Login con Google (Popup — más confiable que redirect en navegadores modernos) ---
+  // --- Login con Google (Popup) ---
   btnLogin.addEventListener("click", async () => {
     try {
       btnLogin.disabled = true;
       btnLogin.textContent = "Iniciando sesión...";
       await signInWithPopup(auth, provider);
-      // onAuthStateChanged se encarga del resto automáticamente
     } catch (error) {
       btnLogin.textContent = "Iniciar sesión con Google";
       btnLogin.disabled = !termsCheckbox.checked;
-
-      // El usuario cerró el popup voluntariamente — no mostrar error
       if (
         error.code === "auth/popup-closed-by-user" ||
         error.code === "auth/cancelled-popup-request"
-      ) {
-        return;
-      }
-
-      console.error("[AUTH] Error iniciando sesión:", error.code, error.message);
+      ) return;
+      console.error("[AUTH] Error iniciando sesión con Google:", error.code, error.message);
       alert(`Error al iniciar sesión (${error.code}). Por favor, inténtalo de nuevo.`);
+    }
+  });
+
+  // --- Login con Facebook (Popup) ---
+  btnLoginFacebook.addEventListener("click", async () => {
+    try {
+      btnLoginFacebook.disabled = true;
+      btnLoginFacebook.textContent = "Iniciando sesión...";
+      await signInWithPopup(auth, facebookProvider);
+    } catch (error) {
+      btnLoginFacebook.textContent = "Iniciar sesión con Facebook";
+      btnLoginFacebook.disabled = !termsCheckbox.checked;
+      if (
+        error.code === "auth/popup-closed-by-user" ||
+        error.code === "auth/cancelled-popup-request"
+      ) return;
+      console.error("[AUTH] Error iniciando sesión con Facebook:", error.code, error.message);
+      alert(`Error al iniciar sesión con Facebook (${error.code}). Por favor, inténtalo de nuevo.`);
     }
   });
 
