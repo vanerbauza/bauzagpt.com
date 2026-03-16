@@ -4,7 +4,7 @@
 function waitForConfig() {
   return new Promise(resolve => {
     const check = () => {
-      if (window.__CONFIG && window.__CONFIG.BACKEND_URL) {
+      if (window.BACKEND_URL) {
         resolve();
       } else {
         setTimeout(check, 50);
@@ -27,7 +27,7 @@ async function initDownload() {
 
   await waitForConfig();
 
-  const BACKEND = window.__CONFIG.BACKEND_URL;
+  const BACKEND = window.BACKEND_URL;
 
   if (btn) {
     btn.addEventListener("click", () => {

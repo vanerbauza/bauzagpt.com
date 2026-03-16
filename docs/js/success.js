@@ -11,7 +11,7 @@ const downloadLink = document.getElementById("download");
 function waitForConfig() {
     return new Promise(resolve => {
         const check = () => {
-            if (window.__CONFIG && window.__CONFIG.BACKEND_URL) {
+            if (window.BACKEND_URL) {
                 resolve();
             } else {
                 setTimeout(check, 50);
@@ -29,7 +29,7 @@ if (!sessionId) {
 // 2. Validar la sesión con el backend (solo session_id, sin JWT)
 async function validateSession() {
     try {
-        const BACKEND = window.__CONFIG.BACKEND_URL;
+        const BACKEND = window.BACKEND_URL;
 
         const res = await fetch(`${BACKEND}/api/stripe/session/${sessionId}`);
 
@@ -64,7 +64,7 @@ async function validateSession() {
 // 3. Revisar periódicamente si el PDF ya está listo (sin JWT)
 async function checkPDF() {
     try {
-        const BACKEND = window.__CONFIG.BACKEND_URL;
+        const BACKEND = window.BACKEND_URL;
 
         if (!window.orderId) {
             console.error("orderId no definido antes de checkPDF");
