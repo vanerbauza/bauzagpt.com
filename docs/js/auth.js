@@ -38,11 +38,28 @@ document.addEventListener("DOMContentLoaded", () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token })
       });
+
+      let payload = null;
+      try {
+        payload = await res.json();
+      } catch {
+        payload = null;
+      }
+
       if (!res.ok) {
         console.warn("[AUTH] Backend verify respondió:", res.status);
+
+        if (res.status === 503 && payload?.error === "firebase_not_initialized") {
+          alert("Tu sesión de Firebase se abrió, pero el backend no puede validar usuarios en este momento. Inténtalo de nuevo más tarde.");
+        }
+
+        return false;
       }
+
+      return true;
     } catch (err) {
       console.error("[AUTH] Error verificando token con backend:", err);
+      return false;
     }
   };
 
@@ -60,7 +77,11 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       const token = await user.getIdToken();
-      await verifyTokenWithBackend(token);
+      const backendVerified = await verifyTokenWithBackend(token);
+
+      if (!backendVerified) {
+        authStatus.textContent = "Sesión iniciada, pero el backend de autenticación no está disponible.";
+      }
 
     } else {
       authStatus.textContent = "No has iniciado sesión";

@@ -1,5 +1,13 @@
 {
   "BACKEND_URL": "https://bauzagpt-backend.fly.dev",
   "STRIPE_PUBLIC_KEY": "pk_live_51SGxdDGpGxziN87jroMV6vpjGJjwypnN29Rj4Z7c5hTr7cQFdDAj9WiJGXpGAoPTYTG29Jtc9l1Q9zGdfZrjrkDte00T0qF9LsS",
-  "ENVIRONMENT": "production"
+  "ENVIRONMENT": "production",
+  "FIREBASE_CONFIG": {
+    "apiKey": "AIzaSyBsd_ik6qTN084UIyF9QWtXjFn6dW-7FTQ",
+    "authDomain": "bauzagpt-fbdca.firebaseapp.com",
+    "projectId": "bauzagpt-fbdca",
+    "storageBucket": "bauzagpt-fbdca.firebasestorage.app",
+    "messagingSenderId": "766060384370",
+    "appId": "1:766060384370:web:fc19c978fe43be4e86b2eb"
+  }
 }

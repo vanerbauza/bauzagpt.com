@@ -45,8 +45,27 @@ document.addEventListener("DOMContentLoaded", () => {
         })
       });
 
+      let errorPayload = null;
       if (!response.ok) {
-        throw new Error(`Error del servidor: ${response.status}`);
+        try {
+          errorPayload = await response.json();
+        } catch {
+          errorPayload = null;
+        }
+      }
+
+      if (!response.ok) {
+        const backendError = errorPayload?.error;
+
+        if (response.status === 503 && backendError === "firebase_not_initialized") {
+          throw new Error("El backend no puede validar tu sesión en este momento.");
+        }
+
+        throw new Error(
+          backendError
+            ? `Error del servidor: ${response.status} (${backendError})`
+            : `Error del servidor: ${response.status}`
+        );
       }
 
       const data = await response.json();
@@ -60,7 +79,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     } catch (error) {
       console.error("Error creando orden:", error);
-      alert("Error al crear la orden. Por favor, inténtalo de nuevo.");
+      alert(error.message || "Error al crear la orden. Por favor, inténtalo de nuevo.");
       btnCreateOrder.disabled = false;
       btnCreateOrder.textContent = "Iniciar búsqueda — $20 MXN";
     }

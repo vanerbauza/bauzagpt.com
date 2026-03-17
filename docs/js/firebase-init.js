@@ -1,18 +1,16 @@
-
-
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
 import { getAuth, GoogleAuthProvider, FacebookAuthProvider } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 
-// Your web app's Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyC4oYizULDSZ36vyhok4HZetPUfO-yeRHs",
-  authDomain: "bauzagpt-fbdca.firebaseapp.com",
-  projectId: "bauzagpt-fbdca",
-  storageBucket: "bauzagpt-fbdca.firebasestorage.app",
-  messagingSenderId: "766060384370",
-  appId: "1:766060384370:web:fc19c978fe43be4e86b2eb"
-};
+const appConfig = window.APP_CONFIG_PROMISE
+  ? await window.APP_CONFIG_PROMISE
+  : null;
+
+const firebaseConfig = appConfig?.FIREBASE_CONFIG || window.FIREBASE_CONFIG;
+
+if (!firebaseConfig) {
+  throw new Error("FIREBASE_CONFIG no disponible en config.json");
+}
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
