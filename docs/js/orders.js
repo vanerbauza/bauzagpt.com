@@ -1,5 +1,4 @@
 import { auth } from "./firebase-init.js";
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   const btnCreateOrder = document.getElementById("btn-create-order");
@@ -34,7 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const token = await user.getIdToken();
 
-      const response = await fetch(`${window.BACKEND_URL}/api/create-checkout-session`, {
+      const response = await fetch(`${window.BACKEND_URL}/api/orders`, {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${token}`,
@@ -51,9 +50,10 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       const data = await response.json();
+      const checkoutUrl = data.checkoutUrl || data.url;
 
-      if (data.url) {
-        window.location.href = data.url;
+      if (checkoutUrl) {
+        window.location.href = checkoutUrl;
       } else {
         throw new Error("No se recibió URL de Stripe");
       }
