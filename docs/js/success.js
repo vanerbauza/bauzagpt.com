@@ -106,6 +106,26 @@ async function checkPDF() {
       return;
     }
 
+    if (data.status === "error") {
+      statusEl.innerText = data.errorMessage
+        ? `El informe falló: ${data.errorMessage}`
+        : "El informe falló durante el procesamiento.";
+      downloadLink.style.display = "none";
+      return;
+    }
+
+    if (data.status === "processing") {
+      statusEl.innerText = "Procesando fuentes OSINT y armando el PDF…";
+      setTimeout(checkPDF, POLL_INTERVAL_MS);
+      return;
+    }
+
+    if (data.status === "paid") {
+      statusEl.innerText = "Pago confirmado. El análisis OSINT está por comenzar…";
+      setTimeout(checkPDF, POLL_INTERVAL_MS);
+      return;
+    }
+
     statusEl.innerText = "Generando informe…";
     setTimeout(checkPDF, POLL_INTERVAL_MS);
   } catch (err) {
