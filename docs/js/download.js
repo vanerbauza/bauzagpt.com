@@ -1,54 +1,23 @@
-import { auth } from "./firebase-init.js";
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import {
+  createReauthHomeHref,
+  getAuthHeaders,
+  hideReauthLink,
+  showReauthLink,
+  waitForAuthenticatedUser,
+  waitForConfig
+} from "./auth-session.js";
 
-function waitForConfig(timeoutMs = 10000) {
-  return new Promise((resolve, reject) => {
-    const startedAt = Date.now();
+function showDownloadAuthHelp(status) {
+  if (status) {
+    status.textContent = "No pudimos restaurar tu sesión. Vuelve al inicio, inicia sesión y regresarás automáticamente a esta descarga.";
+  }
 
-    const check = () => {
-      if (window.BACKEND_URL) {
-        resolve();
-        return;
-      }
-
-      if (Date.now() - startedAt >= timeoutMs) {
-        reject(new Error("config_timeout"));
-        return;
-      }
-
-      setTimeout(check, 50);
-    };
-
-    check();
+  showReauthLink({
+    anchorId: "download-reauth-link",
+    afterElement: status,
+    href: createReauthHomeHref(),
+    text: "Volver al inicio para iniciar sesión y continuar con la descarga"
   });
-}
-
-function waitForAuthenticatedUser() {
-  return new Promise((resolve, reject) => {
-    const unsubscribe = onAuthStateChanged(
-      auth,
-      (user) => {
-        unsubscribe();
-
-        if (!user) {
-          reject(new Error("auth_required"));
-          return;
-        }
-
-        resolve(user);
-      },
-      reject
-    );
-  });
-}
-
-async function getAuthHeaders() {
-  const user = auth.currentUser || await waitForAuthenticatedUser();
-  const token = await user.getIdToken();
-
-  return {
-    "Authorization": `Bearer ${token}`
-  };
 }
 
 async function initDownload() {
@@ -71,14 +40,13 @@ async function initDownload() {
   try {
     await waitForConfig();
     await waitForAuthenticatedUser();
+    hideReauthLink("download-reauth-link");
   } catch (error) {
     console.error("[download] Init error:", error);
     if (btn) {
       btn.disabled = true;
     }
-    if (status) {
-      status.textContent = "Inicia sesión de nuevo para descargar tu informe.";
-    }
+    showDownloadAuthHelp(status);
     return;
   }
 
@@ -95,6 +63,10 @@ async function initDownload() {
         });
 
         if (!response.ok) {
+          if (response.status === 401 || response.status === 403) {
+            throw new Error("auth_required");
+          }
+
           throw new Error(`download_failed_${response.status}`);
         }
 
@@ -113,8 +85,15 @@ async function initDownload() {
         if (status) {
           status.textContent = "Descarga iniciada.";
         }
+        hideReauthLink("download-reauth-link");
       } catch (error) {
         console.error("[download] Error descargando PDF:", error);
+
+        if (error?.message === "auth_required") {
+          showDownloadAuthHelp(status);
+          return;
+        }
+
         if (status) {
           status.textContent = "No se pudo descargar el informe.";
         }

@@ -1,8 +1,8 @@
 import { auth, provider, facebookProvider } from "./firebase-init.js";
-import { 
+import {
   signInWithPopup,
-  onAuthStateChanged, 
-  signOut 
+  onAuthStateChanged,
+  signOut
 } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -12,24 +12,44 @@ document.addEventListener("DOMContentLoaded", () => {
   const authStatus = document.getElementById("auth-status");
   const searchSection = document.getElementById("search-section");
   const termsCheckbox = document.getElementById("terms-checkbox");
+  let redirectedAfterLogin = false;
 
-  // Habilitar botones de login solo si acepta los términos
+  const getSafeReturnTo = () => {
+    const params = new URLSearchParams(window.location.search);
+    const returnTo = params.get("returnTo");
+
+    if (!returnTo) {
+      return null;
+    }
+
+    try {
+      const url = new URL(returnTo, window.location.origin);
+
+      if (url.origin !== window.location.origin) {
+        return null;
+      }
+
+      return `${url.pathname}${url.search}${url.hash}`;
+    } catch {
+      return null;
+    }
+  };
+
   termsCheckbox.addEventListener("change", () => {
     btnLogin.disabled = !termsCheckbox.checked;
     btnLoginFacebook.disabled = !termsCheckbox.checked;
   });
 
-  // Función para verificar token con backend (registra/actualiza usuario en MongoDB)
   const verifyTokenWithBackend = async (token) => {
     let attempts = 0;
     while (!window.BACKEND_URL && attempts < 20) {
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
       attempts++;
     }
 
     if (!window.BACKEND_URL) {
       console.error("[AUTH] BACKEND_URL no disponible");
-      return;
+      return false;
     }
 
     try {
@@ -63,7 +83,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
-  // --- Estado de autenticación ---
   onAuthStateChanged(auth, async (user) => {
     if (user) {
       authStatus.textContent = "Sesión iniciada como: " + (user.email || user.displayName);
@@ -81,8 +100,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (!backendVerified) {
         authStatus.textContent = "Sesión iniciada, pero el backend de autenticación no está disponible.";
+        return;
       }
 
+      const returnTo = getSafeReturnTo();
+      if (returnTo && !redirectedAfterLogin) {
+        redirectedAfterLogin = true;
+        window.location.assign(returnTo);
+      }
     } else {
       authStatus.textContent = "No has iniciado sesión";
       btnLogin.classList.remove("hidden");
@@ -98,7 +123,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // --- Login con Google (Popup) ---
   btnLogin.addEventListener("click", async () => {
     try {
       btnLogin.disabled = true;
@@ -116,7 +140,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // --- Login con Facebook (Popup) ---
   btnLoginFacebook.addEventListener("click", async () => {
     try {
       btnLoginFacebook.disabled = true;
@@ -134,7 +157,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // --- Logout ---
   btnLogout.addEventListener("click", async () => {
     try {
       await signOut(auth);
