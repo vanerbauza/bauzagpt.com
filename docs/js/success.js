@@ -13,6 +13,8 @@ const statusEl = document.getElementById("status");
 const downloadLink = document.getElementById("download");
 const POLL_INTERVAL_MS = 6000;
 let orderId = null;
+let autoDownloadTriggered = false;
+let pollTimeoutId = null;
 
 function showSuccessAuthHelp() {
   if (statusEl) {
@@ -64,6 +66,41 @@ async function downloadPdf() {
   setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
 }
 
+function scheduleCheck() {
+  if (pollTimeoutId) {
+    clearTimeout(pollTimeoutId);
+  }
+
+  pollTimeoutId = setTimeout(checkPDF, POLL_INTERVAL_MS);
+}
+
+async function triggerAutoDownload() {
+  if (autoDownloadTriggered) {
+    return;
+  }
+
+  autoDownloadTriggered = true;
+
+  try {
+    statusEl.innerText = "Informe listo. Iniciando descarga del PDF…";
+    await downloadPdf();
+    statusEl.innerText = "Informe listo. Si la descarga no comenzo, usa el enlace manual.";
+    downloadLink.style.display = "block";
+    hideReauthLink("success-reauth-link");
+  } catch (error) {
+    autoDownloadTriggered = false;
+    console.error("Error en descarga automatica del PDF:", error);
+
+    if (isAuthError(error)) {
+      showSuccessAuthHelp();
+      return;
+    }
+
+    statusEl.innerText = "Informe listo. La descarga automatica fallo; usa el enlace manual.";
+    downloadLink.style.display = "block";
+  }
+}
+
 async function checkPDF() {
   try {
     if (!orderId) {
@@ -85,8 +122,8 @@ async function checkPDF() {
     const data = await res.json();
 
     if (data.status === "ready") {
-      statusEl.innerText = "Informe listo para descargar.";
       downloadLink.style.display = "block";
+      await triggerAutoDownload();
       return;
     }
 
@@ -100,18 +137,18 @@ async function checkPDF() {
 
     if (data.status === "processing") {
       statusEl.innerText = "Procesando fuentes OSINT y armando el PDF…";
-      setTimeout(checkPDF, POLL_INTERVAL_MS);
+      scheduleCheck();
       return;
     }
 
     if (data.status === "paid") {
       statusEl.innerText = "Pago confirmado. El análisis OSINT está por comenzar…";
-      setTimeout(checkPDF, POLL_INTERVAL_MS);
+      scheduleCheck();
       return;
     }
 
-    statusEl.innerText = "Generando informe…";
-    setTimeout(checkPDF, POLL_INTERVAL_MS);
+    statusEl.innerText = "Generando informe y preparando la descarga…";
+    scheduleCheck();
   } catch (err) {
     console.error("Error verificando el informe en checkPDF:", err);
 
@@ -121,7 +158,7 @@ async function checkPDF() {
     }
 
     statusEl.innerText = "Error verificando el informe.";
-    setTimeout(checkPDF, POLL_INTERVAL_MS);
+    scheduleCheck();
   }
 }
 
@@ -150,9 +187,9 @@ async function validateSession() {
     }
 
     orderId = data.orderId;
-    statusEl.innerText = "Pago recibido. Generando informe…";
+    statusEl.innerText = "Pago recibido. Generando informe y preparando la descarga…";
     hideReauthLink("success-reauth-link");
-    setTimeout(checkPDF, POLL_INTERVAL_MS);
+    await checkPDF();
   } catch (err) {
     console.error("Error comunicando con el servidor en validateSession:", err);
 
